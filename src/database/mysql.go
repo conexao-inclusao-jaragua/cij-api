@@ -16,6 +16,16 @@ func ConnectionDB(config *config.Config) *gorm.DB {
 		panic("failed to connect database")
 	}
 
+	err = client.Exec("CREATE DATABASE IF NOT EXISTS cij").Error
+	if err != nil {
+		panic("failed to create database cij")
+	}
+
+	err = client.Exec("USE cij").Error
+	if err != nil {
+		panic("failed to enter database cij")
+	}
+
 	fmt.Print("Database connected")
 
 	return client
