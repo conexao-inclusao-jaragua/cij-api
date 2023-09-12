@@ -1,6 +1,10 @@
 package model
 
-import "cij_api/src/enum"
+import (
+	"cij_api/src/enum"
+
+	"github.com/golang-jwt/jwt"
+)
 
 type User struct {
 	Id       int             `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
@@ -10,4 +14,14 @@ type User struct {
 	Email    string          `gorm:"type:varchar(255);not null" json:"email"`
 	Password string          `gorm:"type:varchar(255);not null" json:"password"`
 	Gender   enum.GenderEnum `gorm:"type:varchar(255);not null" json:"gender"`
+}
+
+type Credentials struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type Claims struct {
+	Username string `json:"username"`
+	jwt.Claims
 }

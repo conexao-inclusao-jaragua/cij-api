@@ -25,3 +25,14 @@ func (n *userRepo) CreateUser(createUser model.User) error {
 
 	return nil
 }
+
+func (n *userRepo) ListUsers() ([]model.User, error) {
+	var users []model.User
+
+	err := n.db.Model(model.User{}).Find(&users).Error
+	if err != nil {
+		return users, errors.New("error on list users from database")
+	}
+
+	return users, nil
+}

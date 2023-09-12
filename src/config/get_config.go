@@ -4,6 +4,7 @@ import "github.com/spf13/viper"
 
 type Config struct {
 	DbConnection string `mapstructure:"DSN"`
+	SecretKey    string `mapstructure:"SECRET_KEY"`
 }
 
 func LoadConfig(path string) (config Config, err error) {

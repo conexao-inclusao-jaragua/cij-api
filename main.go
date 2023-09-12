@@ -7,6 +7,7 @@ import (
 	"cij_api/src/model"
 	"cij_api/src/repo"
 	"cij_api/src/router"
+	"cij_api/src/service"
 	"log"
 
 	"github.com/gofiber/fiber/v2"
@@ -31,7 +32,8 @@ func startServer(db *gorm.DB) {
 	app := fiber.New()
 
 	userRepo := repo.NewUserRepo(db)
-	userController := controller.NewUserController(userRepo)
+	userService := service.NewUserService(userRepo)
+	userController := controller.NewUserController(userService)
 
 	app.Use(cors.New())
 
