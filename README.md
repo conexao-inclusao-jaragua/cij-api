@@ -1,16 +1,16 @@
-# ♿ Conexão Inclusão Jaraguá - API
+# ♿ Conexão Inclusão Jaraguá - WEB
 
-### 🧱 Estrutura
+Olá, bem-vindo(a) à API do CIJ! Aqui você encontrará informações importantes sobre a estrutura do projeto, os pré-requisitos necessários para executá-lo, as instruções de instalação, o banco de dados utilizado e os autores responsáveis pelo desenvolvimento.
 
-### ✅ Pré-requisitos
+## 🧱 Estrutura
 
-### 🛠 Instalação
+## ✅ Pré-requisitos
 
-### 🗃 Banco de Dados
+## 🛠 Instalação
 
-### ✍ Autores
+## ✍ Autores
 
-* <a href='https://github.com/pessotticamilly'>Camilly de Souza Pessotti<a/>
-* <a href='https://github.com/VitoriaCamilly'>Camilly Vitória da Rocha Goltz<a/>
-* <a href='https://github.com/CauaKath'>Cauã Kath<a/>
-* <a href='https://github.com/Kenzohfs'>Kenzo Hideaky Ferreira Sato<a/>
+- [Camilly de Souza Pessotti](https://github.com/pessotticamilly)
+- [Camilly Vitória da Rocha Goltz](https://github.com/VitoriaCamilly)
+- [Cauã Kath](https://github.com/CauaKath)
+- [Kenzo Hideaky Ferreira Sato](https://github.com/Kenzohfs)
