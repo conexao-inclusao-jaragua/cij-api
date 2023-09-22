@@ -1,12 +1,16 @@
 # Conexão Inclusão Jaraguá - API
 
-Olá, bem-vindo(a) à API do CIJ! Aqui você encontrará informações importantes sobre a estrutura do projeto, os pré-requisitos necessários para executá-lo, as instruções de instalação, o banco de dados utilizado e os autores responsáveis pelo desenvolvimento.
+Olá, bem-vindo(a) ao API do CIJ! Aqui você encontrará informações importantes sobre a estrutura da aplicação, os pré-requisitos necessários para executá-la, as instruções de instalação, o banco de dados utilizado e os autores responsáveis pelo desenvolvimento.
 
 ## 🧱 Estrutura
 
 ## ✅ Pré-requisitos
 
+Antes de prosseguir, certifique-se de ter os seguintes componentes instalados:
+
 ## 🛠 Instalação
+
+## 🗃 Banco de Dados
 
 ## ✍ Autores
 
