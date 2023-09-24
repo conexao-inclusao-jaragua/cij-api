@@ -3,20 +3,18 @@ package controller
 import (
 	"cij_api/src/domain"
 	"cij_api/src/model"
-	"errors"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserController struct {
-	userRepo domain.UserRepo
+	userService domain.UserService
 }
 
-func NewUserController(userRepo domain.UserRepo) *UserController {
+func NewUserController(userService domain.UserService) *UserController {
 	return &UserController{
-		userRepo: userRepo,
+		userService: userService,
 	}
 }
 
@@ -33,19 +31,7 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	hashedPassword, err := encryptPassword(userRequest.Password)
-	if err != nil {
-		response = model.Response{
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
-		}
-
-		return ctx.Status(http.StatusInternalServerError).JSON(response)
-	}
-
-	userRequest.Password = hashedPassword
-
-	if err := n.userRepo.CreateUser(userRequest); err != nil {
+	if err := n.userService.CreateUser(userRequest); err != nil {
 		response = model.Response{
 			StatusCode: http.StatusInternalServerError,
 			Message:    err.Error(),
@@ -62,18 +48,24 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response)
 }
 
-func encryptPassword(password string) (string, error) {
-	passwordBytes := []byte(password)
+func (n *UserController) ListUsers(ctx *fiber.Ctx) error {
+	var response model.Response
 
-	hashedPassword, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
+	users, err := n.userService.ListUsers()
 	if err != nil {
-		return "", errors.New("error on encrypt password")
+		response = model.Response{
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		}
+
+		return ctx.Status(http.StatusInternalServerError).JSON(response)
 	}
 
-	err = bcrypt.CompareHashAndPassword(hashedPassword, passwordBytes)
-	if err != nil {
-		return "", errors.New("error on encrypt password")
+	response = model.Response{
+		StatusCode: http.StatusOK,
+		Message:    "success",
+		Data:       users,
 	}
 
-	return string(hashedPassword), nil
+	return ctx.Status(http.StatusOK).JSON(response)
 }

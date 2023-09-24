@@ -25,3 +25,25 @@ func (n *userRepo) CreateUser(createUser model.User) error {
 
 	return nil
 }
+
+func (n *userRepo) ListUsers() ([]model.User, error) {
+	var users []model.User
+
+	err := n.db.Model(model.User{}).Find(&users).Error
+	if err != nil {
+		return users, errors.New("error on list users from database")
+	}
+
+	return users, nil
+}
+
+func (n *userRepo) GetUserByEmail(email string) (model.User, error) {
+	var user model.User
+
+	err := n.db.Model(model.User{}).Where("email = ?", email).Find(&user).Error
+	if err != nil {
+		return user, errors.New("failed to get the user")
+	}
+
+	return user, nil
+}

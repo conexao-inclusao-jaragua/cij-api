@@ -2,10 +2,8 @@ package main
 
 import (
 	"cij_api/src/config"
-	"cij_api/src/controller"
 	"cij_api/src/database"
 	"cij_api/src/model"
-	"cij_api/src/repo"
 	"cij_api/src/router"
 	"log"
 
@@ -30,9 +28,6 @@ func main() {
 func startServer(db *gorm.DB) {
 	app := fiber.New()
 
-	userRepo := repo.NewUserRepo(db)
-	userController := controller.NewUserController(userRepo)
-
 	app.Use(cors.New())
 
 	app.Use(cors.New(cors.Config{
@@ -40,7 +35,7 @@ func startServer(db *gorm.DB) {
 		AllowHeaders: "Origin, Content-Type, Accept, Access-Control-Allow-Origin",
 	}))
 
-	routes := router.NewRouter(app, userController)
+	routes := router.NewRouter(app, db)
 
 	err := routes.Listen(":3040")
 	if err != nil {
