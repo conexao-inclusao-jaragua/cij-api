@@ -50,3 +50,12 @@ func encryptPassword(password string) (string, error) {
 
 	return string(hashedPassword), nil
 }
+
+func (n *userService) GetUserByEmail(email string) (model.User, error) {
+	user, err := n.userRepo.GetUserByEmail(email)
+	if err != nil {
+		return user, errors.New("failed to get user by email")
+	}
+
+	return user, nil
+}

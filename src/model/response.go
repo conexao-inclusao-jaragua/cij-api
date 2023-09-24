@@ -7,6 +7,7 @@ type Response struct {
 }
 
 type LoginResponse struct {
-	Token    string `json:"token"`
-	UserInfo User   `json:"user_info"`
+	Token    string      `json:"token,omitempty"`
+	UserInfo interface{} `json:"user_info,omitempty"`
+	Message  string      `json:"message,omitempty"`
 }

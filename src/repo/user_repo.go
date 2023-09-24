@@ -36,3 +36,14 @@ func (n *userRepo) ListUsers() ([]model.User, error) {
 
 	return users, nil
 }
+
+func (n *userRepo) GetUserByEmail(email string) (model.User, error) {
+	var user model.User
+
+	err := n.db.Model(model.User{}).Where("email = ?", email).Find(&user).Error
+	if err != nil {
+		return user, errors.New("failed to get the user")
+	}
+
+	return user, nil
+}
