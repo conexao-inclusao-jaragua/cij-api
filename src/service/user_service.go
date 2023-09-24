@@ -18,6 +18,15 @@ type userService struct {
 	userRepo domain.UserRepo
 }
 
+func (s *userService) ListUsers() ([]model.User, error) {
+	users, err := s.userRepo.ListUsers()
+	if err != nil {
+		return users, errors.New("failed to list users")
+	}
+
+	return users, nil
+}
+
 func (n *userService) CreateUser(createUser model.User) error {
 	hashedPassword, err := encryptPassword(createUser.Password)
 	if err != nil {

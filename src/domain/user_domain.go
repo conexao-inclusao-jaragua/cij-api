@@ -10,5 +10,6 @@ type UserRepo interface {
 
 type UserService interface {
 	CreateUser(createUser model.User) error
+	ListUsers() ([]model.User, error)
 	GetUserByEmail(email string) (model.User, error)
 }

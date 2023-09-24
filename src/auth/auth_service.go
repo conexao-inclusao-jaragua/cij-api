@@ -5,6 +5,7 @@ import (
 	"cij_api/src/domain"
 	"cij_api/src/model"
 	"errors"
+	"time"
 
 	"github.com/golang-jwt/jwt"
 )
@@ -35,8 +36,8 @@ func (s *AuthService) GenerateToken(user model.User) (string, error) {
 	}
 
 	claims := &jwt.MapClaims{
-		"expiresAt": 15000,
-		"username":  user.Name,
+		"exp":  jwt.TimeFunc().Add(time.Minute * 10).Unix(),
+		"role": "USER",
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -47,6 +48,17 @@ func (s *AuthService) GenerateToken(user model.User) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func ValidateToken(tokenString string) (*jwt.Token, error) {
+	secret, err := getSecretKey()
+	if err != nil {
+		return nil, errors.New("failed to get token")
+	}
+
+	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
 }
 
 func (s *AuthService) Authenticate(credentials model.Credentials) (model.User, error) {

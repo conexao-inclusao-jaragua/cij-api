@@ -47,3 +47,25 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 
 	return ctx.Status(http.StatusOK).JSON(response)
 }
+
+func (n *UserController) ListUsers(ctx *fiber.Ctx) error {
+	var response model.Response
+
+	users, err := n.userService.ListUsers()
+	if err != nil {
+		response = model.Response{
+			StatusCode: http.StatusInternalServerError,
+			Message:    err.Error(),
+		}
+
+		return ctx.Status(http.StatusInternalServerError).JSON(response)
+	}
+
+	response = model.Response{
+		StatusCode: http.StatusOK,
+		Message:    "success",
+		Data:       users,
+	}
+
+	return ctx.Status(http.StatusOK).JSON(response)
+}
