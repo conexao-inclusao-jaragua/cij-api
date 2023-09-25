@@ -11,10 +11,10 @@ Olá, bem-vindo(a) à API do CIJ! Aqui você encontrará informações important
 
 ## ✅ Pré-requisitos
 
+Antes de prosseguir, certifique-se de ter os seguintes componentes instalados:
+
 - Golang: ^1.21.0
 - MySQL: ^8.0.0
-
-Antes de prosseguir, certifique-se de ter os seguintes componentes instalados:
 
 ## 🛠 Instalação
 
