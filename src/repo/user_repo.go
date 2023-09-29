@@ -29,7 +29,7 @@ func (n *userRepo) CreateUser(createUser model.User) error {
 func (n *userRepo) ListUsers() ([]model.UserResponse, error) {
 	var users []model.UserResponse
 
-	err := n.db.Model(model.UserResponse{}).Find(&users).Error
+	err := n.db.Model(model.User{}).Find(&users).Error
 	if err != nil {
 		return users, errors.New("error on list users from database")
 	}
