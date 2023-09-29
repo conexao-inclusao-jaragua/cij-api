@@ -18,7 +18,7 @@ type userService struct {
 	userRepo domain.UserRepo
 }
 
-func (s *userService) ListUsers() ([]model.User, error) {
+func (s *userService) ListUsers() ([]model.UserResponse, error) {
 	users, err := s.userRepo.ListUsers()
 	if err != nil {
 		return users, errors.New("failed to list users")
