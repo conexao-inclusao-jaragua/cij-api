@@ -19,6 +19,12 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	authService := auth.NewAuthService(userRepo)
 	authController := auth.NewAuthController(*authService)
 
+	router.Get("/health", func(c *fiber.Ctx) error {
+		return c.JSON(fiber.Map{
+			"message": "Server running",
+		})
+	})
+
 	api := router.Group("/users")
 	{
 		api.Post("/login", authController.Authenticate)
