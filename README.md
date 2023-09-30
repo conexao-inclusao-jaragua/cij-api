@@ -29,6 +29,61 @@ go install
 go run main.go
 ```
 
+## 🌐 Rotas
+
+* Health Check
+
+> :memo: **Note:** Verifica se a API está rodando
+
+POST ```http://localhost:3040/health```
+
+<br>
+
+* Create User
+
+> :memo: **Note:** Criar um novo usuário
+
+POST ```http://localhost:3040/users/create```
+```json
+{
+  "name": "Fulano",
+  "cpf": "12345678910",
+  "phone": "5547988002233",
+  "email": "fulano@gmail.com",
+  "password": "1234",
+  "gender": "male || female || other"
+}
+```
+
+<br>
+
+* Login
+
+> :memo: **Note:** Fazer login na API como usuário
+
+POST ```http://localhost:3040/users/login```
+```json
+{
+  "email": "fulano@gmail.com",
+  "password": "1234"
+}
+```
+
+<br>
+
+> :warning: **Obs:** Para todos os endpoints abaixo é necessário passar o token retornado na requisição como Headers:
+> | Key           | Value |
+> | ------------- | ----- |
+> | Authorization | Token |
+
+<br>
+
+* List users
+
+> :memo: **Note:** Listar todos os usuários da plataforma
+
+GET ```http://localhost:3040/users/list```
+
 ## ✍ Autores
 
 - [Camilly de Souza Pessotti](https://github.com/pessotticamilly)
