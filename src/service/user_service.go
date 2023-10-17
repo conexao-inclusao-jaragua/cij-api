@@ -1,11 +1,10 @@
 package service
 
 import (
+	"cij_api/src/auth"
 	"cij_api/src/domain"
 	"cij_api/src/model"
 	"errors"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 func NewUserService(userRepo domain.UserRepo) domain.UserService {
@@ -18,7 +17,7 @@ type userService struct {
 	userRepo domain.UserRepo
 }
 
-func (s *userService) ListUsers() ([]model.UserResponse, error) {
+func (s *userService) ListUsers() ([]model.User, error) {
 	users, err := s.userRepo.ListUsers()
 	if err != nil {
 		return users, errors.New("failed to list users")
@@ -28,7 +27,7 @@ func (s *userService) ListUsers() ([]model.UserResponse, error) {
 }
 
 func (n *userService) CreateUser(createUser model.User) error {
-	hashedPassword, err := encryptPassword(createUser.Password)
+	hashedPassword, err := auth.EncryptPassword(createUser.Password)
 	if err != nil {
 		return errors.New("error on encrypt user password")
 	}
@@ -42,22 +41,6 @@ func (n *userService) CreateUser(createUser model.User) error {
 	}
 
 	return nil
-}
-
-func encryptPassword(password string) (string, error) {
-	passwordBytes := []byte(password)
-
-	hashedPassword, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
-	if err != nil {
-		return "", errors.New("error on encrypt password")
-	}
-
-	err = bcrypt.CompareHashAndPassword(hashedPassword, passwordBytes)
-	if err != nil {
-		return "", errors.New("error on encrypt password")
-	}
-
-	return string(hashedPassword), nil
 }
 
 func (n *userService) GetUserByEmail(email string) (model.User, error) {

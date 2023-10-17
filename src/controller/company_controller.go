@@ -8,21 +8,21 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type UserController struct {
-	userService domain.UserService
+type CompanyController struct {
+	companyService domain.CompanyService
 }
 
-func NewUserController(userService domain.UserService) *UserController {
-	return &UserController{
-		userService: userService,
+func NewCompanyController(companyService domain.CompanyService) *CompanyController {
+	return &CompanyController{
+		companyService: companyService,
 	}
 }
 
-func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
-	var userRequest model.User
+func (n *CompanyController) CreateCompany(ctx *fiber.Ctx) error {
+	var companyRequest model.Company
 	var response model.Response
 
-	if err := ctx.BodyParser(&userRequest); err != nil {
+	if err := ctx.BodyParser(&companyRequest); err != nil {
 		response = model.Response{
 			StatusCode: http.StatusBadRequest,
 			Message:    err.Error(),
@@ -31,7 +31,7 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	if err := n.userService.CreateUser(userRequest); err != nil {
+	if err := n.companyService.CreateCompany(companyRequest); err != nil {
 		response = model.Response{
 			StatusCode: http.StatusInternalServerError,
 			Message:    err.Error(),
@@ -48,10 +48,10 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response)
 }
 
-func (n *UserController) ListUsers(ctx *fiber.Ctx) error {
+func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 	var response model.Response
 
-	users, err := n.userService.ListUsers()
+	companies, err := n.companyService.ListCompanies()
 	if err != nil {
 		response = model.Response{
 			StatusCode: http.StatusInternalServerError,
@@ -61,16 +61,16 @@ func (n *UserController) ListUsers(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
 	}
 
-	usersResponse := []model.UserResponse{}
+	companiesResponse := []model.CompanyResponse{}
 
-	for _, user := range users {
-		usersResponse = append(usersResponse, user.ToResponse())
+	for _, company := range companies {
+		companiesResponse = append(companiesResponse, company.ToResponse())
 	}
 
 	response = model.Response{
 		StatusCode: http.StatusOK,
 		Message:    "success",
-		Data:       usersResponse,
+		Data:       companiesResponse,
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)

@@ -21,6 +21,7 @@ func main() {
 	db := database.ConnectionDB(&loadConfig)
 
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Company{})
 
 	startServer(db)
 }
