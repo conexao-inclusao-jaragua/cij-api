@@ -32,15 +32,24 @@ func getSecretKey() ([]byte, error) {
 	return []byte(loadConfig.SecretKey), nil
 }
 
-func (s *AuthService) GenerateToken(role string) (string, error) {
+func (s *AuthService) GenerateToken(role string, user model.User, company model.Company) (string, error) {
 	secretKey, err := getSecretKey()
 	if err != nil {
 		return "", errors.New("error on get secret key from .env")
 	}
 
+	var userEmail string
+
+	if role == "user" {
+		userEmail = user.Email
+	} else {
+		userEmail = company.Email
+	}
+
 	claims := &jwt.MapClaims{
-		"exp":  jwt.TimeFunc().Add(time.Minute * 10).Unix(),
-		"role": role,
+		"exp":   jwt.TimeFunc().Add(time.Minute * 10).Unix(),
+		"role":  role,
+		"email": userEmail,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -113,6 +122,48 @@ func (s *AuthService) Authenticate(credentials model.Credentials, role string) (
 
 		if !company.ValidatePassword(credentials.Password) {
 			return user, company, errors.New("email/password incorrects")
+		}
+
+		return user, company, nil
+	}
+
+	return user, company, errors.New("role not found")
+}
+
+func (s *AuthService) GetUserData(token string) (model.User, model.Company, error) {
+	var user model.User
+	var company model.Company
+
+	tokenData, err := ValidateToken(token)
+	if err != nil {
+		return user, company, errors.New("invalid token")
+	}
+
+	claims := tokenData.Claims.(jwt.MapClaims)
+	tokenRole := claims["role"].(string)
+	tokenEmail := claims["email"].(string)
+
+	if tokenRole == "user" {
+		user, err := s.userRepo.GetUserByEmail(tokenEmail)
+		if err != nil {
+			return user, company, errors.New("failed to get user by email")
+		}
+
+		if user.Email == "" {
+			return user, company, errors.New("user with this email not found")
+		}
+
+		return user, company, nil
+	}
+
+	if tokenRole == "company" {
+		company, err := s.companyRepo.GetCompanyByEmail(tokenEmail)
+		if err != nil {
+			return user, company, errors.New("failed to get company by email")
+		}
+
+		if company.Email == "" {
+			return user, company, errors.New("company with this email not found")
 		}
 
 		return user, company, nil

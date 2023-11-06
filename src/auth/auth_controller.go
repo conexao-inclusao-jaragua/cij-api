@@ -11,6 +11,10 @@ type AuthController struct {
 	authService AuthService
 }
 
+type TokenRequest struct {
+	Token string `json:"token"`
+}
+
 func NewAuthController(authService AuthService) *AuthController {
 	return &AuthController{
 		authService: authService,
@@ -47,7 +51,7 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	token, err := c.authService.GenerateToken(role)
+	token, err := c.authService.GenerateToken(role, user, company)
 	if err != nil {
 		response = model.LoginResponse{
 			Message: err.Error(),
@@ -64,6 +68,40 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 	} else if company.Email != "" {
 		response = model.LoginResponse{
 			Token:    token,
+			UserInfo: company.ToResponse(),
+		}
+	}
+
+	return ctx.Status(http.StatusOK).JSON(response)
+}
+
+func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
+	var token TokenRequest
+	var response model.LoginResponse
+
+	if err := ctx.BodyParser(&token); err != nil {
+		response = model.LoginResponse{
+			Message: "token not found",
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	user, company, err := c.authService.GetUserData(token.Token)
+	if err != nil {
+		response = model.LoginResponse{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	if user.Email != "" {
+		response = model.LoginResponse{
+			UserInfo: user.ToResponse(),
+		}
+	} else if company.Email != "" {
+		response = model.LoginResponse{
 			UserInfo: company.ToResponse(),
 		}
 	}
