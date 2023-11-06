@@ -18,10 +18,19 @@ func NewAuthController(authService AuthService) *AuthController {
 }
 
 func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
-	var userCredentials model.Credentials
+	var credentials model.Credentials
 	var response model.LoginResponse
+	var role = ctx.Params("role")
 
-	if err := ctx.BodyParser(&userCredentials); err != nil {
+	if role != "user" && role != "company" {
+		response = model.LoginResponse{
+			Message: "role not found",
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	if err := ctx.BodyParser(&credentials); err != nil {
 		response = model.LoginResponse{
 			Message: err.Error(),
 		}
@@ -29,7 +38,7 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	user, err := c.authService.Authenticate(userCredentials)
+	user, company, err := c.authService.Authenticate(credentials, role)
 	if err != nil {
 		response = model.LoginResponse{
 			Message: err.Error(),
@@ -38,7 +47,7 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	token, err := c.authService.GenerateToken(user)
+	token, err := c.authService.GenerateToken(role)
 	if err != nil {
 		response = model.LoginResponse{
 			Message: err.Error(),
@@ -47,9 +56,16 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	response = model.LoginResponse{
-		Token:    token,
-		UserInfo: user,
+	if user.Email != "" {
+		response = model.LoginResponse{
+			Token:    token,
+			UserInfo: user.ToResponse(),
+		}
+	} else if company.Email != "" {
+		response = model.LoginResponse{
+			Token:    token,
+			UserInfo: company.ToResponse(),
+		}
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)

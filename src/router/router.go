@@ -16,7 +16,11 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	userService := service.NewUserService(userRepo)
 	userController := controller.NewUserController(userService)
 
-	authService := auth.NewAuthService(userRepo)
+	companyRepo := repo.NewCompanyRepo(db)
+	companyService := service.NewCompanyService(companyRepo)
+	companyController := controller.NewCompanyController(companyService)
+
+	authService := auth.NewAuthService(userRepo, companyRepo)
 	authController := auth.NewAuthController(*authService)
 
 	router.Get("/health", func(c *fiber.Ctx) error {
@@ -25,13 +29,21 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 		})
 	})
 
+	router.Post("/login/:role", authController.Authenticate)
+
 	api := router.Group("/users")
 	{
-		api.Post("/login", authController.Authenticate)
 		api.Post("/create", userController.CreateUser)
 
 		api.Use(middleware.AuthUser)
 		api.Get("/list", userController.ListUsers)
+	}
+
+	api = router.Group("/companies")
+	{
+		api.Use(middleware.AuthCompany)
+		api.Post("/create", companyController.CreateCompany)
+		api.Get("/list", companyController.ListCompanies)
 	}
 
 	return router

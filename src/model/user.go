@@ -25,11 +25,17 @@ type UserResponse struct {
 	Gender enum.GenderEnum `json:"gender"`
 }
 
-type Credentials struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
 func (u *User) ValidatePassword(password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)) == nil
+}
+
+func (u *User) ToResponse() UserResponse {
+	return UserResponse{
+		Id:     u.Id,
+		Name:   u.Name,
+		Cpf:    u.Cpf,
+		Phone:  u.Phone,
+		Email:  u.Email,
+		Gender: u.Gender,
+	}
 }
