@@ -30,6 +30,7 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	})
 
 	router.Post("/login/:role", authController.Authenticate)
+	router.Get("/get-user-data", authController.GetUserData)
 
 	api := router.Group("/users")
 	{
