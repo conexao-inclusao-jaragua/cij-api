@@ -23,10 +23,15 @@ func main() {
 
 	db := database.ConnectionDB(&loadConfig)
 
-	db.AutoMigrate(&model.User{})
-	db.AutoMigrate(&model.Company{})
+	migrateDb(db)
 
 	startServer(db)
+}
+
+func migrateDb(db *gorm.DB) {
+	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Company{})
+	db.AutoMigrate(&model.News{})
 }
 
 func startServer(db *gorm.DB) {
