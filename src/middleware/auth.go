@@ -20,7 +20,7 @@ func AuthUser(ctx *fiber.Ctx) error {
 	var response model.Response
 
 	token, err := Auth(ctx)
-	if err.StatusCode != http.StatusOK {
+	if err.Message != "" {
 		return ctx.Status(http.StatusBadRequest).JSON(err)
 	}
 
@@ -29,8 +29,7 @@ func AuthUser(ctx *fiber.Ctx) error {
 
 	if tokenRole != USER_ROLE && tokenRole != COMPANY_ROLE {
 		response = model.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    "role don't have permission",
+			Message: "role don't have permission",
 		}
 
 		return ctx.Status(http.StatusBadRequest).JSON(response)
@@ -43,7 +42,7 @@ func AuthCompany(ctx *fiber.Ctx) error {
 	var response model.Response
 
 	token, err := Auth(ctx)
-	if err.StatusCode != http.StatusOK {
+	if err.Message != "" {
 		return ctx.Status(http.StatusBadRequest).JSON(err)
 	}
 
@@ -52,8 +51,7 @@ func AuthCompany(ctx *fiber.Ctx) error {
 
 	if tokenRole != COMPANY_ROLE {
 		response = model.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    "role don't have permission",
+			Message: "role don't have permission",
 		}
 
 		return ctx.Status(http.StatusBadRequest).JSON(response)
@@ -68,8 +66,7 @@ func Auth(ctx *fiber.Ctx) (*jwt.Token, model.Response) {
 
 	if tokenParam == "" {
 		response = model.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    "token not found",
+			Message: "token not found",
 		}
 
 		return nil, response
@@ -78,8 +75,7 @@ func Auth(ctx *fiber.Ctx) (*jwt.Token, model.Response) {
 	token, err := auth.ValidateToken(tokenParam)
 	if err != nil {
 		response = model.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    "token invalid or expired",
+			Message: "token invalid or expired",
 		}
 
 		return nil, response
@@ -87,12 +83,11 @@ func Auth(ctx *fiber.Ctx) (*jwt.Token, model.Response) {
 
 	if !token.Valid {
 		response = model.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    "token is not valid",
+			Message: "token is not valid",
 		}
 
 		return nil, response
 	}
 
-	return token, model.Response{StatusCode: http.StatusOK}
+	return token, model.Response{}
 }

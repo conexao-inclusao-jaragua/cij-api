@@ -24,8 +24,7 @@ func (n *CompanyController) CreateCompany(ctx *fiber.Ctx) error {
 
 	if err := ctx.BodyParser(&companyRequest); err != nil {
 		response = model.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    err.Error(),
+			Message: err.Error(),
 		}
 
 		return ctx.Status(http.StatusBadRequest).JSON(response)
@@ -33,16 +32,14 @@ func (n *CompanyController) CreateCompany(ctx *fiber.Ctx) error {
 
 	if err := n.companyService.CreateCompany(companyRequest); err != nil {
 		response = model.Response{
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
+			Message: err.Error(),
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
 	}
 
 	response = model.Response{
-		StatusCode: http.StatusCreated,
-		Message:    "success",
+		Message: "success",
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)
@@ -54,8 +51,7 @@ func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 	companies, err := n.companyService.ListCompanies()
 	if err != nil {
 		response = model.Response{
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
+			Message: err.Error(),
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
@@ -68,9 +64,8 @@ func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 	}
 
 	response = model.Response{
-		StatusCode: http.StatusOK,
-		Message:    "success",
-		Data:       companiesResponse,
+		Message: "success",
+		Data:    companiesResponse,
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)

@@ -24,8 +24,7 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 
 	if err := ctx.BodyParser(&userRequest); err != nil {
 		response = model.Response{
-			StatusCode: http.StatusBadRequest,
-			Message:    err.Error(),
+			Message: err.Error(),
 		}
 
 		return ctx.Status(http.StatusBadRequest).JSON(response)
@@ -33,16 +32,14 @@ func (n *UserController) CreateUser(ctx *fiber.Ctx) error {
 
 	if err := n.userService.CreateUser(userRequest); err != nil {
 		response = model.Response{
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
+			Message: err.Error(),
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
 	}
 
 	response = model.Response{
-		StatusCode: http.StatusCreated,
-		Message:    "success",
+		Message: "success",
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)
@@ -54,8 +51,7 @@ func (n *UserController) ListUsers(ctx *fiber.Ctx) error {
 	users, err := n.userService.ListUsers()
 	if err != nil {
 		response = model.Response{
-			StatusCode: http.StatusInternalServerError,
-			Message:    err.Error(),
+			Message: err.Error(),
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
@@ -68,9 +64,8 @@ func (n *UserController) ListUsers(ctx *fiber.Ctx) error {
 	}
 
 	response = model.Response{
-		StatusCode: http.StatusOK,
-		Message:    "success",
-		Data:       usersResponse,
+		Message: "success",
+		Data:    usersResponse,
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)

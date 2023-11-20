@@ -20,6 +20,10 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	companyService := service.NewCompanyService(companyRepo)
 	companyController := controller.NewCompanyController(companyService)
 
+	newsRepo := repo.NewNewsRepo(db)
+	newsService := service.NewNewsService(newsRepo)
+	newsController := controller.NewNewsController(newsService)
+
 	authService := auth.NewAuthService(userRepo, companyRepo)
 	authController := auth.NewAuthController(*authService)
 
@@ -45,6 +49,11 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 		api.Use(middleware.AuthCompany)
 		api.Post("/create", companyController.CreateCompany)
 		api.Get("/list", companyController.ListCompanies)
+	}
+
+	api = router.Group("news")
+	{
+		api.Get("/list", newsController.ListNews)
 	}
 
 	return router
