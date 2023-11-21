@@ -39,17 +39,20 @@ func (s *AuthService) GenerateToken(role string, user model.User, company model.
 	}
 
 	var userEmail string
+	var isAdmin bool
 
 	if role == "user" {
 		userEmail = user.Email
+		isAdmin = user.IsAdmin
 	} else {
 		userEmail = company.Email
 	}
 
 	claims := &jwt.MapClaims{
-		"exp":   jwt.TimeFunc().Add(time.Minute * 10).Unix(),
-		"role":  role,
-		"email": userEmail,
+		"exp":     jwt.TimeFunc().Add(time.Minute * 10).Unix(),
+		"role":    role,
+		"email":   userEmail,
+		"isAdmin": isAdmin,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

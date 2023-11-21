@@ -13,6 +13,7 @@ type User struct {
 	Phone    string          `gorm:"type:char(13);not null" json:"phone"`
 	Email    string          `gorm:"type:varchar(255);not null;unique" json:"email"`
 	Password string          `gorm:"type:varchar(255);not null" json:"password"`
+	IsAdmin  bool            `gorm:"type:tinyint(1);not null;default:0" json:"is_admin"`
 	Gender   enum.GenderEnum `gorm:"type:char(6);not null" json:"gender"`
 }
 
