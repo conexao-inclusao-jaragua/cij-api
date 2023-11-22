@@ -38,6 +38,28 @@ func AuthUser(ctx *fiber.Ctx) error {
 	return ctx.Next()
 }
 
+func AuthAdmin(ctx *fiber.Ctx) error {
+	var response model.Response
+
+	token, err := Auth(ctx)
+	if err.Message != "" {
+		return ctx.Status(http.StatusBadRequest).JSON(err)
+	}
+
+	claims := token.Claims.(jwt.MapClaims)
+	isAdmin := claims["isAdmin"].(bool)
+
+	if !isAdmin {
+		response = model.Response{
+			Message: "role don't have permission",
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	return ctx.Next()
+}
+
 func AuthCompany(ctx *fiber.Ctx) error {
 	var response model.Response
 
