@@ -46,8 +46,9 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 
 	api = router.Group("/companies")
 	{
-		api.Use(middleware.AuthCompany)
 		api.Post("/create", companyController.CreateCompany)
+
+		api.Use(middleware.AuthCompany)
 		api.Get("/list", companyController.ListCompanies)
 	}
 
