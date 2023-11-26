@@ -13,10 +13,10 @@ type Company struct {
 }
 
 type CompanyRequest struct {
-	Name  string `json:"name"`
-	Cnpj  string `json:"cnpj"`
-	Phone string `json:"phone"`
-	User  User   `json:"user"`
+	Name  string      `json:"name"`
+	Cnpj  string      `json:"cnpj"`
+	Phone string      `json:"phone"`
+	User  UserRequest `json:"user"`
 }
 
 type CompanyResponse struct {
@@ -37,12 +37,12 @@ func (c *Company) ToResponse(user User) CompanyResponse {
 	}
 }
 
-func (c *CompanyRequest) ToCompany() Company {
+func (c *CompanyRequest) ToCompany(user User) Company {
 	return Company{
 		Name:   c.Name,
 		Cnpj:   c.Cnpj,
 		Phone:  c.Phone,
-		UserId: c.User.Id,
+		UserId: user.Id,
 	}
 }
 

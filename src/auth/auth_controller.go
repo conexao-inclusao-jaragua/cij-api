@@ -28,6 +28,17 @@ func NewAuthController(
 	}
 }
 
+// Login
+// @Summary Do login.
+// @Description do login and returns token.
+// @Tags Auth
+// @Accept */*
+// @Produce json
+// @Param credentials body model.Credentials true "Credentials"
+// @Success 200 {object} model.LoginResponse
+// @Failure 400 {object} string "bad request"
+// @Failure 500 {object} string "internal server error"
+// @Router /login [post]
 func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 	var credentials model.Credentials
 	var response model.LoginResponse
@@ -66,6 +77,17 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response)
 }
 
+// GetUserData
+// @Summary Get user information.
+// @Description get user information by token.
+// @Tags Auth
+// @Accept */*
+// @Produce json
+// @Param token body TokenRequest true "Token"
+// @Success 200 {object} model.LoginResponse
+// @Failure 400 {object} string "bad request"
+// @Failure 500 {object} string "internal server error"
+// @Router /get-user-data [post]
 func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 	var token TokenRequest
 	var response model.LoginResponse

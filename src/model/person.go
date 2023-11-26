@@ -22,7 +22,7 @@ type PersonRequest struct {
 	Cpf    string          `json:"cpf"`
 	Phone  string          `json:"phone"`
 	Gender enum.GenderEnum `json:"gender"`
-	User   User            `json:"user"`
+	User   UserRequest     `json:"user"`
 }
 
 type PersonResponse struct {
@@ -45,13 +45,13 @@ func (p *Person) ToResponse(user User) PersonResponse {
 	}
 }
 
-func (p *PersonRequest) ToPerson() Person {
+func (p *PersonRequest) ToPerson(user User) Person {
 	return Person{
 		Name:   p.Name,
 		Cpf:    p.Cpf,
 		Phone:  p.Phone,
 		Gender: p.Gender,
-		UserId: p.User.Id,
+		UserId: user.Id,
 	}
 }
 
