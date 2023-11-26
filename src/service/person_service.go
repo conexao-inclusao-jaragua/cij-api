@@ -100,12 +100,17 @@ func (n *personService) UpdatePerson(person model.PersonRequest, personId int) e
 }
 
 func (n *personService) DeletePerson(personId int) error {
-	err := n.personRepo.DeletePerson(personId)
+	person, err := n.personRepo.GetPersonById(personId)
+	if err != nil {
+		return errors.New("failed to get person")
+	}
+
+	err = n.personRepo.DeletePerson(personId)
 	if err != nil {
 		return errors.New("failed to delete person")
 	}
 
-	err = n.userRepo.DeleteUser(personId)
+	err = n.userRepo.DeleteUser(person.UserId)
 	if err != nil {
 		return errors.New("failed to delete user")
 	}

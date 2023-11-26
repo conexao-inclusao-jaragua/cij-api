@@ -37,6 +37,17 @@ func (n *personRepo) ListPeople() ([]model.Person, error) {
 	return people, nil
 }
 
+func (n *personRepo) GetPersonById(personId int) (model.Person, error) {
+	var person model.Person
+
+	err := n.db.Model(model.Person{}).Preload("User").Where("id = ?", personId).Find(&person).Error
+	if err != nil {
+		return person, errors.New("failed to get the person")
+	}
+
+	return person, nil
+}
+
 func (n *personRepo) GetPersonByUserId(userId int) (model.Person, error) {
 	var person model.Person
 
