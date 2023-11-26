@@ -55,9 +55,10 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) error {
 		return errors.New("error on create user")
 	}
 
-	createPerson.User.Id = userId
+	personInfo := createPerson.ToPerson(userInfo)
+	personInfo.UserId = userId
 
-	err = n.personRepo.CreatePerson(createPerson.ToPerson())
+	err = n.personRepo.CreatePerson(personInfo)
 	if err != nil {
 		n.userRepo.DeleteUser(userId)
 
@@ -76,8 +77,8 @@ func (n *personService) GetPersonByUserId(userId int) (model.Person, error) {
 	return person, nil
 }
 
-func (n *personService) UpdatePerson(person model.PersonRequest, personId int) error {
-	userInfo := person.ToUser()
+func (n *personService) UpdatePerson(updatePerson model.PersonRequest, personId int) error {
+	userInfo := updatePerson.ToUser()
 
 	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
 	if err != nil {
@@ -91,7 +92,9 @@ func (n *personService) UpdatePerson(person model.PersonRequest, personId int) e
 		return errors.New("failed to update user")
 	}
 
-	err = n.personRepo.UpdatePerson(person.ToPerson(), personId)
+	personInfo := updatePerson.ToPerson(userInfo)
+
+	err = n.personRepo.UpdatePerson(personInfo, personId)
 	if err != nil {
 		return errors.New("failed to update person")
 	}

@@ -31,73 +31,7 @@ go run main.go
 
 ## 🌐 Rotas
 
-* Health Check
-
-> :memo: **Note:** Verifica se a API está rodando
-
-POST ```http://localhost:3040/health```
-
-<br>
-
-* Create a Person
-
-> :memo: **Note:** Criar um novo usuário
-
-POST ```http://localhost:3040/people```
-```json
-{
-  "name": "Fulano",
-  "cpf": "12345678910",
-  "phone": "5547988002233",
-  "gender": "male || female || other",
-  "user": {
-    "email": "fulano@gmail.com",
-    "password": "1234",
-  }
-}
-```
-
-<br>
-
-* Get User Data
-
-> :memo: **Note:** Criar um novo usuário
-
-POST ```http://localhost:3040/get-user-data```
-```json
-{
-  "token": "jwt token"
-}
-```
-
-<br>
-
-* Login
-
-> :memo: **Note:** Fazer login na API como usuário
-
-POST ```http://localhost:3040/people/login```
-```json
-{
-  "email": "fulano@gmail.com",
-  "password": "1234"
-}
-```
-
-<br>
-
-> :warning: **Obs:** Para todos os endpoints abaixo é necessário passar o token retornado na requisição como Headers:
-> | Key           | Value |
-> | ------------- | ----- |
-> | Authorization | Token |
-
-<br>
-
-* List people
-
-> :memo: **Note:** Listar todos os usuários da plataforma
-
-GET ```http://localhost:3040/people/list```
+http://localhost:3040/swagger/index.html
 
 ## ✍ Autores
 
