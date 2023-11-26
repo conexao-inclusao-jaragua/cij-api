@@ -7,5 +7,5 @@ type NewsRepo interface {
 }
 
 type NewsService interface {
-	ListNews() ([]model.News, error)
+	ListNews() ([]model.NewsResponse, error)
 }

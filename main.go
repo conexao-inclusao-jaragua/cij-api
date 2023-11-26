@@ -30,8 +30,26 @@ func main() {
 
 func migrateDb(db *gorm.DB) {
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Person{})
 	db.AutoMigrate(&model.Company{})
 	db.AutoMigrate(&model.News{})
+	db.AutoMigrate(&model.Role{})
+
+	createDefaultRoles(db)
+}
+
+func createDefaultRoles(db *gorm.DB) {
+	db.Create(&model.Role{
+		Name: "person",
+	})
+
+	db.Create(&model.Role{
+		Name: "company",
+	})
+
+	db.Create(&model.Role{
+		Name: "admin",
+	})
 }
 
 func startServer(db *gorm.DB) {

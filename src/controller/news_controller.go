@@ -21,7 +21,7 @@ func NewNewsController(newsService domain.NewsService) *NewsController {
 func (n *NewsController) ListNews(ctx *fiber.Ctx) error {
 	var response model.Response
 
-	allNews, err := n.newsService.ListNews()
+	news, err := n.newsService.ListNews()
 	if err != nil {
 		response = model.Response{
 			Message: err.Error(),
@@ -30,7 +30,7 @@ func (n *NewsController) ListNews(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
 	}
 
-	if len(allNews) == 0 {
+	if len(news) == 0 {
 		response = model.Response{
 			Message: "No news were found",
 		}
@@ -38,15 +38,9 @@ func (n *NewsController) ListNews(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusNotFound).JSON(response)
 	}
 
-	newsResponse := []model.NewsResponse{}
-
-	for _, news := range allNews {
-		newsResponse = append(newsResponse, news.ToResponse())
-	}
-
 	response = model.Response{
 		Message: "success",
-		Data:    newsResponse,
+		Data:    news,
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)

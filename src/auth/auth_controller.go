@@ -24,15 +24,6 @@ func NewAuthController(authService AuthService) *AuthController {
 func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 	var credentials model.Credentials
 	var response model.LoginResponse
-	var role = ctx.Params("role")
-
-	if role != "user" && role != "company" {
-		response = model.LoginResponse{
-			Message: "role not found",
-		}
-
-		return ctx.Status(http.StatusBadRequest).JSON(response)
-	}
 
 	if err := ctx.BodyParser(&credentials); err != nil {
 		response = model.LoginResponse{
@@ -42,7 +33,7 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	user, company, err := c.authService.Authenticate(credentials, role)
+	user, err := c.authService.Authenticate(credentials)
 	if err != nil {
 		response = model.LoginResponse{
 			Message: err.Error(),
@@ -51,7 +42,7 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	token, err := c.authService.GenerateToken(role, user, company)
+	token, err := c.authService.GenerateToken(user)
 	if err != nil {
 		response = model.LoginResponse{
 			Message: err.Error(),
@@ -60,16 +51,9 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	if user.Email != "" {
-		response = model.LoginResponse{
-			Token:    token,
-			UserInfo: user.ToResponse(),
-		}
-	} else if company.Email != "" {
-		response = model.LoginResponse{
-			Token:    token,
-			UserInfo: company.ToResponse(),
-		}
+	response = model.LoginResponse{
+		Token:    token,
+		UserInfo: user.ToResponse(),
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)
@@ -87,7 +71,7 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	user, company, err := c.authService.GetUserData(token.Token)
+	user, err := c.authService.GetUserData(token.Token)
 	if err != nil {
 		response = model.LoginResponse{
 			Message: err.Error(),
@@ -96,14 +80,8 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	if user.Email != "" {
-		response = model.LoginResponse{
-			UserInfo: user.ToResponse(),
-		}
-	} else if company.Email != "" {
-		response = model.LoginResponse{
-			UserInfo: company.ToResponse(),
-		}
+	response = model.LoginResponse{
+		UserInfo: user.ToResponse(),
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)

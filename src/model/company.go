@@ -1,36 +1,51 @@
 package model
 
-import (
-	"golang.org/x/crypto/bcrypt"
-)
-
 type Company struct {
-	Id       int    `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
-	Name     string `gorm:"type:varchar(200);not null" json:"name"`
-	Cnpj     string `gorm:"type:char(13);not null;unique" json:"cnpj"`
-	Phone    string `gorm:"type:char(13);not null" json:"phone"`
-	Email    string `gorm:"type:varchar(255);not null;unique" json:"email"`
-	Password string `gorm:"type:varchar(255);not null" json:"password"`
+	Id     int    `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
+	Name   string `gorm:"type:varchar(200);not null" json:"name"`
+	Cnpj   string `gorm:"type:char(14);not null;unique" json:"cnpj"`
+	Phone  string `gorm:"type:char(13);not null" json:"phone"`
+	UserId int    `gorm:"type:int;not null" json:"user_id"`
+	User   *User
 }
 
-type CompanyResponse struct {
-	Id    int    `json:"id"`
+type CompanyRequest struct {
 	Name  string `json:"name"`
 	Cnpj  string `json:"cnpj"`
 	Phone string `json:"phone"`
-	Email string `json:"email"`
+	User  User   `json:"user"`
 }
 
-func (c *Company) ValidatePassword(password string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(c.Password), []byte(password)) == nil
+type CompanyResponse struct {
+	Id    int          `json:"id"`
+	Name  string       `json:"name"`
+	Cnpj  string       `json:"cnpj"`
+	Phone string       `json:"phone"`
+	User  UserResponse `json:"user"`
 }
 
-func (c *Company) ToResponse() CompanyResponse {
+func (c *Company) ToResponse(user User) CompanyResponse {
 	return CompanyResponse{
 		Id:    c.Id,
 		Name:  c.Name,
 		Cnpj:  c.Cnpj,
 		Phone: c.Phone,
-		Email: c.Email,
+		User:  user.ToResponse(),
+	}
+}
+
+func (c *CompanyRequest) ToCompany() Company {
+	return Company{
+		Name:   c.Name,
+		Cnpj:   c.Cnpj,
+		Phone:  c.Phone,
+		UserId: c.User.Id,
+	}
+}
+
+func (c *CompanyRequest) ToUser() User {
+	return User{
+		Email:    c.User.Email,
+		Password: c.User.Password,
 	}
 }

@@ -18,12 +18,12 @@ func NewUserRepo(db *gorm.DB) domain.UserRepo {
 	}
 }
 
-func (n *userRepo) CreateUser(createUser model.User) error {
+func (n *userRepo) CreateUser(createUser model.User) (int, error) {
 	if err := n.db.Create(&createUser).Error; err != nil {
-		return errors.New("failed to create user")
+		return 0, errors.New("failed to create user")
 	}
 
-	return nil
+	return createUser.Id, nil
 }
 
 func (n *userRepo) ListUsers() ([]model.User, error) {
@@ -40,10 +40,30 @@ func (n *userRepo) ListUsers() ([]model.User, error) {
 func (n *userRepo) GetUserByEmail(email string) (model.User, error) {
 	var user model.User
 
-	err := n.db.Model(model.User{}).Where("email = ?", email).Find(&user).Error
+	err := n.db.Model(model.User{}).Preload("Role").Where("email = ?", email).Find(&user).Error
 	if err != nil {
 		return user, errors.New("failed to get the user")
 	}
 
 	return user, nil
+}
+
+func (n *userRepo) GetUserById(id int) (model.User, error) {
+	var user model.User
+
+	err := n.db.Model(model.User{}).Preload("Role").Where("id = ?", id).Find(&user).Error
+	if err != nil {
+		return user, errors.New("failed to get the user")
+	}
+
+	return user, nil
+}
+
+func (n *userRepo) DeleteUser(userId int) error {
+	err := n.db.Model(model.User{}).Where("id = ?", userId).Delete(&model.User{}).Error
+	if err != nil {
+		return errors.New("failed to delete the user")
+	}
+
+	return nil
 }

@@ -16,12 +16,17 @@ func NewNewsService(newsRepo domain.NewsRepo) domain.NewsService {
 	}
 }
 
-func (n *newsService) ListNews() ([]model.News, error) {
-	news, err := n.newsRepo.ListNews()
+func (n *newsService) ListNews() ([]model.NewsResponse, error) {
+	newsResponse := []model.NewsResponse{}
 
+	news, err := n.newsRepo.ListNews()
 	if err != nil {
-		return news, errors.New("failed to list news")
+		return newsResponse, errors.New("failed to list news")
 	}
 
-	return news, nil
+	for _, news := range news {
+		newsResponse = append(newsResponse, news.ToResponse())
+	}
+
+	return newsResponse, nil
 }

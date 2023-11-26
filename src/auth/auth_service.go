@@ -12,14 +12,12 @@ import (
 )
 
 type AuthService struct {
-	userRepo    domain.UserRepo
-	companyRepo domain.CompanyRepo
+	userRepo domain.UserRepo
 }
 
-func NewAuthService(userRepo domain.UserRepo, companyRepo domain.CompanyRepo) *AuthService {
+func NewAuthService(userRepo domain.UserRepo) *AuthService {
 	return &AuthService{
-		userRepo:    userRepo,
-		companyRepo: companyRepo,
+		userRepo: userRepo,
 	}
 }
 
@@ -32,27 +30,16 @@ func getSecretKey() ([]byte, error) {
 	return []byte(loadConfig.SecretKey), nil
 }
 
-func (s *AuthService) GenerateToken(role string, user model.User, company model.Company) (string, error) {
+func (s *AuthService) GenerateToken(user model.User) (string, error) {
 	secretKey, err := getSecretKey()
 	if err != nil {
 		return "", errors.New("error on get secret key from .env")
 	}
 
-	var userEmail string
-	var isAdmin bool
-
-	if role == "user" {
-		userEmail = user.Email
-		isAdmin = user.IsAdmin
-	} else {
-		userEmail = company.Email
-	}
-
 	claims := &jwt.MapClaims{
-		"exp":     jwt.TimeFunc().Add(time.Minute * 10).Unix(),
-		"role":    role,
-		"email":   userEmail,
-		"isAdmin": isAdmin,
+		"exp":   jwt.TimeFunc().Add(time.Minute * 10).Unix(),
+		"role":  user.Role.Name,
+		"email": user.Email,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -92,85 +79,44 @@ func EncryptPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (s *AuthService) Authenticate(credentials model.Credentials, role string) (model.User, model.Company, error) {
+func (s *AuthService) Authenticate(credentials model.Credentials) (model.User, error) {
 	var user model.User
-	var company model.Company
 
-	if role == "user" {
-		user, err := s.userRepo.GetUserByEmail(credentials.Email)
-		if err != nil {
-			return user, company, errors.New("failed to get user by email")
-		}
-
-		if user.Email == "" {
-			return user, company, errors.New("user with this email not found")
-		}
-
-		if !user.ValidatePassword(credentials.Password) {
-			return user, company, errors.New("email/password incorrects")
-		}
-
-		return user, company, nil
+	user, err := s.userRepo.GetUserByEmail(credentials.Email)
+	if err != nil {
+		return user, errors.New("failed to get user by email")
 	}
 
-	if role == "company" {
-		company, err := s.companyRepo.GetCompanyByEmail(credentials.Email)
-		if err != nil {
-			return user, company, errors.New("failed to get company by email")
-		}
-
-		if company.Email == "" {
-			return user, company, errors.New("company with this email not found")
-		}
-
-		if !company.ValidatePassword(credentials.Password) {
-			return user, company, errors.New("email/password incorrects")
-		}
-
-		return user, company, nil
+	if user.Email == "" {
+		return user, errors.New("user with this email not found")
 	}
 
-	return user, company, errors.New("role not found")
+	if !user.ValidatePassword(credentials.Password) {
+		return user, errors.New("email/password incorrects")
+	}
+
+	return user, nil
 }
 
-func (s *AuthService) GetUserData(token string) (model.User, model.Company, error) {
+func (s *AuthService) GetUserData(token string) (model.User, error) {
 	var user model.User
-	var company model.Company
 
 	tokenData, err := ValidateToken(token)
 	if err != nil {
-		return user, company, errors.New("invalid token")
+		return user, errors.New("invalid token")
 	}
 
 	claims := tokenData.Claims.(jwt.MapClaims)
-	tokenRole := claims["role"].(string)
 	tokenEmail := claims["email"].(string)
 
-	if tokenRole == "user" {
-		user, err := s.userRepo.GetUserByEmail(tokenEmail)
-		if err != nil {
-			return user, company, errors.New("failed to get user by email")
-		}
-
-		if user.Email == "" {
-			return user, company, errors.New("user with this email not found")
-		}
-
-		return user, company, nil
+	user, err = s.userRepo.GetUserByEmail(tokenEmail)
+	if err != nil {
+		return user, errors.New("failed to get user by email")
 	}
 
-	if tokenRole == "company" {
-		company, err := s.companyRepo.GetCompanyByEmail(tokenEmail)
-		if err != nil {
-			return user, company, errors.New("failed to get company by email")
-		}
-
-		if company.Email == "" {
-			return user, company, errors.New("company with this email not found")
-		}
-
-		return user, company, nil
+	if user.Email == "" {
+		return user, errors.New("user with this email not found")
 	}
 
-	return user, company, errors.New("role not found")
+	return user, nil
 }
