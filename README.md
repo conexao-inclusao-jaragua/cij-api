@@ -39,19 +39,34 @@ POST ```http://localhost:3040/health```
 
 <br>
 
-* Create User
+* Create a Person
 
 > :memo: **Note:** Criar um novo usuário
 
-POST ```http://localhost:3040/users/create```
+POST ```http://localhost:3040/people```
 ```json
 {
   "name": "Fulano",
   "cpf": "12345678910",
   "phone": "5547988002233",
-  "email": "fulano@gmail.com",
-  "password": "1234",
-  "gender": "male || female || other"
+  "gender": "male || female || other",
+  "user": {
+    "email": "fulano@gmail.com",
+    "password": "1234",
+  }
+}
+```
+
+<br>
+
+* Get User Data
+
+> :memo: **Note:** Criar um novo usuário
+
+POST ```http://localhost:3040/get-user-data```
+```json
+{
+  "token": "jwt token"
 }
 ```
 
@@ -61,7 +76,7 @@ POST ```http://localhost:3040/users/create```
 
 > :memo: **Note:** Fazer login na API como usuário
 
-POST ```http://localhost:3040/users/login```
+POST ```http://localhost:3040/people/login```
 ```json
 {
   "email": "fulano@gmail.com",
@@ -78,11 +93,11 @@ POST ```http://localhost:3040/users/login```
 
 <br>
 
-* List users
+* List people
 
 > :memo: **Note:** Listar todos os usuários da plataforma
 
-GET ```http://localhost:3040/users/list```
+GET ```http://localhost:3040/people/list```
 
 ## ✍ Autores
 

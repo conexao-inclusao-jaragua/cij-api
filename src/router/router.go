@@ -3,6 +3,7 @@ package router
 import (
 	"cij_api/src/auth"
 	"cij_api/src/controller"
+	"cij_api/src/middleware"
 	"cij_api/src/repo"
 	"cij_api/src/service"
 
@@ -36,21 +37,23 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	router.Post("/login", authController.Authenticate)
 	router.Post("/get-user-data", authController.GetUserData)
 
-	api := router.Group("/users")
+	api := router.Group("/people")
 	{
-		api.Post("/create", personController.CreatePerson)
-		api.Get("/list", personController.ListPeople)
+		api.Post("/", personController.CreatePerson)
+		api.Get("/", personController.ListPeople)
 	}
 
 	api = router.Group("/companies")
 	{
-		api.Post("/create", companyController.CreateCompany)
-		api.Get("/list", companyController.ListCompanies)
+		api.Get("/", companyController.ListCompanies)
+
+		api.Use(middleware.AuthAdmin)
+		api.Post("/", companyController.CreateCompany)
 	}
 
 	api = router.Group("/news")
 	{
-		api.Get("/list", newsController.ListNews)
+		api.Get("/", newsController.ListNews)
 	}
 
 	return router

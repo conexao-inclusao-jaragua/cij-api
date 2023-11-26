@@ -40,7 +40,7 @@ func (n *userRepo) ListUsers() ([]model.User, error) {
 func (n *userRepo) GetUserByEmail(email string) (model.User, error) {
 	var user model.User
 
-	err := n.db.Model(model.User{}).Where("email = ?", email).Find(&user).Error
+	err := n.db.Model(model.User{}).Preload("Role").Where("email = ?", email).Find(&user).Error
 	if err != nil {
 		return user, errors.New("failed to get the user")
 	}
@@ -51,7 +51,7 @@ func (n *userRepo) GetUserByEmail(email string) (model.User, error) {
 func (n *userRepo) GetUserById(id int) (model.User, error) {
 	var user model.User
 
-	err := n.db.Model(model.User{}).Where("id = ?", id).Find(&user).Error
+	err := n.db.Model(model.User{}).Preload("Role").Where("id = ?", id).Find(&user).Error
 	if err != nil {
 		return user, errors.New("failed to get the user")
 	}
