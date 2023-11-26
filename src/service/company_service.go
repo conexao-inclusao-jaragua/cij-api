@@ -66,3 +66,12 @@ func (n *companyService) CreateCompany(createCompany model.CompanyRequest) error
 
 	return nil
 }
+
+func (n *companyService) GetCompanyByUserId(userId int) (model.Company, error) {
+	company, err := n.companyRepo.GetCompanyByUserId(userId)
+	if err != nil {
+		return company, errors.New("failed to get the company")
+	}
+
+	return company, nil
+}

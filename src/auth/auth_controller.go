@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"cij_api/src/domain"
 	"cij_api/src/model"
 	"net/http"
 
@@ -8,16 +9,21 @@ import (
 )
 
 type AuthController struct {
-	authService AuthService
+	authService    AuthService
+	personService  domain.PersonService
+	companyService domain.CompanyService
 }
 
 type TokenRequest struct {
 	Token string `json:"token"`
 }
 
-func NewAuthController(authService AuthService) *AuthController {
+func NewAuthController(
+	authService AuthService, personService domain.PersonService, companyService domain.CompanyService,
+) *AuthController {
 	return &AuthController{
-		authService: authService,
+		authService:   authService,
+		personService: personService,
 	}
 }
 
@@ -77,12 +83,38 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 			Message: err.Error(),
 		}
 
-		return ctx.Status(http.StatusBadRequest).JSON(response)
+		return ctx.Status(http.StatusInternalServerError).JSON(response)
 	}
 
-	response = model.LoginResponse{
-		UserInfo: user.ToResponse(),
-	}
+	if user.RoleId == 2 {
+		company, err := c.companyService.GetCompanyByUserId(user.Id)
+		if err != nil {
+			response = model.LoginResponse{
+				Message: err.Error(),
+			}
 
-	return ctx.Status(http.StatusOK).JSON(response)
+			return ctx.Status(http.StatusInternalServerError).JSON(response)
+		}
+
+		response = model.LoginResponse{
+			UserInfo: company.ToResponse(user),
+		}
+
+		return ctx.Status(http.StatusOK).JSON(response)
+	} else {
+		person, err := c.personService.GetPersonByUserId(user.Id)
+		if err != nil {
+			response = model.LoginResponse{
+				Message: err.Error(),
+			}
+
+			return ctx.Status(http.StatusInternalServerError).JSON(response)
+		}
+
+		response = model.LoginResponse{
+			UserInfo: person.ToResponse(user),
+		}
+
+		return ctx.Status(http.StatusOK).JSON(response)
+	}
 }

@@ -13,7 +13,7 @@ type Person struct {
 	Cpf    string          `gorm:"type:char(11);not null;unique" json:"cpf"`
 	Phone  string          `gorm:"type:char(13);not null" json:"phone"`
 	Gender enum.GenderEnum `gorm:"type:char(6);not null" json:"gender"`
-	UserId int             `gorm:"type:int;not null" json:"user_id"`
+	UserId int             `gorm:"type:int;not null;unique" json:"user_id"`
 	User   *User
 }
 

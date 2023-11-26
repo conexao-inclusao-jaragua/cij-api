@@ -5,7 +5,7 @@ type Company struct {
 	Name   string `gorm:"type:varchar(200);not null" json:"name"`
 	Cnpj   string `gorm:"type:char(14);not null;unique" json:"cnpj"`
 	Phone  string `gorm:"type:char(13);not null" json:"phone"`
-	UserId int    `gorm:"type:int;not null" json:"user_id"`
+	UserId int    `gorm:"type:int;not null;unique" json:"user_id"`
 	User   *User
 }
 
