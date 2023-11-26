@@ -37,6 +37,17 @@ func (n *personRepo) ListPeople() ([]model.Person, error) {
 	return people, nil
 }
 
+func (n *personRepo) GetPersonById(personId int) (model.Person, error) {
+	var person model.Person
+
+	err := n.db.Model(model.Person{}).Preload("User").Where("id = ?", personId).Find(&person).Error
+	if err != nil {
+		return person, errors.New("failed to get the person")
+	}
+
+	return person, nil
+}
+
 func (n *personRepo) GetPersonByUserId(userId int) (model.Person, error) {
 	var person model.Person
 
@@ -46,4 +57,20 @@ func (n *personRepo) GetPersonByUserId(userId int) (model.Person, error) {
 	}
 
 	return person, nil
+}
+
+func (n *personRepo) UpdatePerson(person model.Person, personId int) error {
+	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Updates(person).Error; err != nil {
+		return errors.New("failed to update the person")
+	}
+
+	return nil
+}
+
+func (n *personRepo) DeletePerson(personId int) error {
+	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Delete(&model.Person{}).Error; err != nil {
+		return errors.New("failed to delete the person")
+	}
+
+	return nil
 }

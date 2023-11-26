@@ -37,6 +37,17 @@ func (n *companyRepo) ListCompanies() ([]model.Company, error) {
 	return companies, nil
 }
 
+func (n *companyRepo) GetCompanyById(companyId int) (model.Company, error) {
+	var company model.Company
+
+	err := n.db.Model(model.Company{}).Preload("User").Where("id = ?", companyId).Find(&company).Error
+	if err != nil {
+		return company, errors.New("failed to get the company")
+	}
+
+	return company, nil
+}
+
 func (n *companyRepo) GetCompanyByUserId(userId int) (model.Company, error) {
 	var company model.Company
 
@@ -46,4 +57,20 @@ func (n *companyRepo) GetCompanyByUserId(userId int) (model.Company, error) {
 	}
 
 	return company, nil
+}
+
+func (n *companyRepo) UpdateCompany(company model.Company, companyId int) error {
+	if err := n.db.Model(model.Company{}).Where("id = ?", companyId).Updates(company).Error; err != nil {
+		return errors.New("failed to update the company")
+	}
+
+	return nil
+}
+
+func (n *companyRepo) DeleteCompany(companyId int) error {
+	if err := n.db.Model(model.Company{}).Where("id = ?", companyId).Delete(&model.Company{}).Error; err != nil {
+		return errors.New("failed to delete the company")
+	}
+
+	return nil
 }
