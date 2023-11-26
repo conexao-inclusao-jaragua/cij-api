@@ -19,7 +19,7 @@ func NewCompanyController(companyService domain.CompanyService) *CompanyControll
 }
 
 func (n *CompanyController) CreateCompany(ctx *fiber.Ctx) error {
-	var companyRequest model.Company
+	var companyRequest model.CompanyRequest
 	var response model.Response
 
 	if err := ctx.BodyParser(&companyRequest); err != nil {
@@ -57,15 +57,17 @@ func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
 	}
 
-	companiesResponse := []model.CompanyResponse{}
+	if len(companies) == 0 {
+		response = model.Response{
+			Message: "no companies were found",
+		}
 
-	for _, company := range companies {
-		companiesResponse = append(companiesResponse, company.ToResponse())
+		return ctx.Status(http.StatusNotFound).JSON(response)
 	}
 
 	response = model.Response{
 		Message: "success",
-		Data:    companiesResponse,
+		Data:    companies,
 	}
 
 	return ctx.Status(http.StatusOK).JSON(response)

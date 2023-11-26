@@ -3,7 +3,6 @@ package router
 import (
 	"cij_api/src/auth"
 	"cij_api/src/controller"
-	"cij_api/src/middleware"
 	"cij_api/src/repo"
 	"cij_api/src/service"
 
@@ -12,19 +11,20 @@ import (
 )
 
 func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
+	personRepo := repo.NewPersonRepo(db)
 	userRepo := repo.NewUserRepo(db)
-	userService := service.NewUserService(userRepo)
-	userController := controller.NewUserController(userService)
+	personService := service.NewPersonService(personRepo, userRepo)
+	personController := controller.NewPersonController(personService)
 
 	companyRepo := repo.NewCompanyRepo(db)
-	companyService := service.NewCompanyService(companyRepo)
+	companyService := service.NewCompanyService(companyRepo, userRepo)
 	companyController := controller.NewCompanyController(companyService)
 
 	newsRepo := repo.NewNewsRepo(db)
 	newsService := service.NewNewsService(newsRepo)
 	newsController := controller.NewNewsController(newsService)
 
-	authService := auth.NewAuthService(userRepo, companyRepo)
+	authService := auth.NewAuthService(userRepo)
 	authController := auth.NewAuthController(*authService)
 
 	router.Get("/health", func(c *fiber.Ctx) error {
@@ -33,26 +33,22 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 		})
 	})
 
-	router.Post("/login/:role", authController.Authenticate)
+	router.Post("/login", authController.Authenticate)
 	router.Post("/get-user-data", authController.GetUserData)
 
 	api := router.Group("/users")
 	{
-		api.Post("/create", userController.CreateUser)
-
-		api.Use(middleware.AuthUser)
-		api.Get("/list", userController.ListUsers)
+		api.Post("/create", personController.CreatePerson)
+		api.Get("/list", personController.ListPeople)
 	}
 
 	api = router.Group("/companies")
 	{
 		api.Post("/create", companyController.CreateCompany)
-
-		api.Use(middleware.AuthCompany)
 		api.Get("/list", companyController.ListCompanies)
 	}
 
-	api = router.Group("news")
+	api = router.Group("/news")
 	{
 		api.Get("/list", newsController.ListNews)
 	}
