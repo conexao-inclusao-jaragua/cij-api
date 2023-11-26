@@ -12,9 +12,17 @@ import (
 	"gorm.io/gorm"
 )
 
-var PRD_ENV = "prd"
+const PRD_ENV = "prd"
+
 var env string
 
+// @title GO Clean API
+// @version 1.0
+// @description This the API for the CIJ project
+// @contact.name API Support
+// @contact.email cauakathdev@gmail.com
+// @host localhost:3040
+// @BasePath /
 func main() {
 	loadConfig, err := config.LoadConfig(".")
 	if err != nil {

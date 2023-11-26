@@ -18,6 +18,16 @@ func NewNewsController(newsService domain.NewsService) *NewsController {
 	}
 }
 
+// ListNews
+// @Summary List all registered news.
+// @Description list all registered news.
+// @Tags News
+// @Accept */*
+// @Produce json
+// @Success 200 {array} model.NewsResponse
+// @Failure 404 {object} string "not found"
+// @Failure 500 {object} string "internal server error"
+// @Router /news [get]
 func (n *NewsController) ListNews(ctx *fiber.Ctx) error {
 	var response model.Response
 

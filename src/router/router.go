@@ -7,6 +7,9 @@ import (
 	"cij_api/src/repo"
 	"cij_api/src/service"
 
+	_ "cij_api/docs"
+
+	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -28,11 +31,9 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	authService := auth.NewAuthService(userRepo)
 	authController := auth.NewAuthController(*authService, personService, companyService)
 
-	router.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"message": "Server running",
-		})
-	})
+	router.Get("/health", HealthCheck)
+
+	router.Get("/swagger/*", swagger.HandlerDefault)
 
 	router.Post("/login", authController.Authenticate)
 	router.Post("/get-user-data", authController.GetUserData)
@@ -61,4 +62,24 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	}
 
 	return router
+}
+
+// HealthCheck
+// @Summary Show the status of server.
+// @Description get the status of server.
+// @Tags Root
+// @Accept */*
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /health [get]
+func HealthCheck(c *fiber.Ctx) error {
+	res := map[string]interface{}{
+		"data": "Server is up and running",
+	}
+
+	if err := c.JSON(res); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -1,0 +1,454 @@
+basePath: /
+definitions:
+  auth.TokenRequest:
+    properties:
+      token:
+        type: string
+    type: object
+  enum.GenderEnum:
+    enum:
+    - male
+    - female
+    - other
+    type: string
+    x-enum-varnames:
+    - Male
+    - Female
+    - Other
+  model.CompanyRequest:
+    properties:
+      cnpj:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      user:
+        $ref: '#/definitions/model.UserRequest'
+    type: object
+  model.CompanyResponse:
+    properties:
+      cnpj:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      user:
+        $ref: '#/definitions/model.UserResponse'
+    type: object
+  model.Credentials:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  model.LoginResponse:
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+      user_info: {}
+    type: object
+  model.NewsResponse:
+    properties:
+      author:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
+  model.PersonRequest:
+    properties:
+      cpf:
+        type: string
+      gender:
+        $ref: '#/definitions/enum.GenderEnum'
+      name:
+        type: string
+      phone:
+        type: string
+      user:
+        $ref: '#/definitions/model.UserRequest'
+    type: object
+  model.PersonResponse:
+    properties:
+      cpf:
+        type: string
+      gender:
+        $ref: '#/definitions/enum.GenderEnum'
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      user:
+        $ref: '#/definitions/model.UserResponse'
+    type: object
+  model.UserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  model.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+    type: object
+host: localhost:3040
+info:
+  contact:
+    email: cauakathdev@gmail.com
+    name: API Support
+  description: This the API for the CIJ project
+  title: GO Clean API
+  version: "1.0"
+paths:
+  /companies:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete an existent company and their user.
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Delete a company.
+      tags:
+      - Companies
+    get:
+      consumes:
+      - '*/*'
+      description: list all registered companies and their users.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.CompanyResponse'
+            type: array
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: List all registered companies.
+      tags:
+      - Companies
+    post:
+      consumes:
+      - '*/*'
+      description: create a new company and their user.
+      parameters:
+      - description: Company
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/model.CompanyRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Create a new company.
+      tags:
+      - Companies
+    put:
+      consumes:
+      - '*/*'
+      description: update an existent company and their user.
+      parameters:
+      - description: Company
+        in: body
+        name: company
+        required: true
+        schema:
+          $ref: '#/definitions/model.CompanyRequest'
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Update a company.
+      tags:
+      - Companies
+  /get-user-data:
+    post:
+      consumes:
+      - '*/*'
+      description: get user information by token.
+      parameters:
+      - description: Token
+        in: body
+        name: token
+        required: true
+        schema:
+          $ref: '#/definitions/auth.TokenRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Get user information.
+      tags:
+      - Auth
+  /health:
+    get:
+      consumes:
+      - '*/*'
+      description: get the status of server.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+      - Root
+  /login:
+    post:
+      consumes:
+      - '*/*'
+      description: do login and returns token.
+      parameters:
+      - description: Credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/model.Credentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.LoginResponse'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Do login.
+      tags:
+      - Auth
+  /news:
+    get:
+      consumes:
+      - '*/*'
+      description: list all registered news.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.NewsResponse'
+            type: array
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: List all registered news.
+      tags:
+      - News
+  /people:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete an existent person and their user.
+      parameters:
+      - description: Person ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Delete a person.
+      tags:
+      - People
+    get:
+      consumes:
+      - '*/*'
+      description: list all registered people and their users.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.PersonResponse'
+            type: array
+        "404":
+          description: not found
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: List all registered people.
+      tags:
+      - People
+    post:
+      consumes:
+      - '*/*'
+      description: create a new person and their user.
+      parameters:
+      - description: Person
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/model.PersonRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Create a new person.
+      tags:
+      - People
+    put:
+      consumes:
+      - '*/*'
+      description: update an existent person and their user.
+      parameters:
+      - description: Person
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/model.PersonRequest'
+      - description: Person ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Update a person.
+      tags:
+      - People
+swagger: "2.0"
