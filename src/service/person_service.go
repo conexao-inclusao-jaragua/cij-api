@@ -66,3 +66,12 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) error {
 
 	return nil
 }
+
+func (n *personService) GetPersonByUserId(userId int) (model.Person, error) {
+	person, err := n.personRepo.GetPersonByUserId(userId)
+	if err != nil {
+		return person, errors.New("failed to get person")
+	}
+
+	return person, nil
+}

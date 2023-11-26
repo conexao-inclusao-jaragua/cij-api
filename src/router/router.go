@@ -26,7 +26,7 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	newsController := controller.NewNewsController(newsService)
 
 	authService := auth.NewAuthService(userRepo)
-	authController := auth.NewAuthController(*authService)
+	authController := auth.NewAuthController(*authService, personService, companyService)
 
 	router.Get("/health", func(c *fiber.Ctx) error {
 		return c.JSON(fiber.Map{
