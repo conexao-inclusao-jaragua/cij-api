@@ -75,3 +75,45 @@ func (n *companyService) GetCompanyByUserId(userId int) (model.Company, error) {
 
 	return company, nil
 }
+
+func (n *companyService) UpdateCompany(updateCompany model.CompanyRequest, companyId int) error {
+	userInfo := updateCompany.ToUser()
+
+	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
+	if err != nil {
+		return errors.New("error on encrypt company password")
+	}
+
+	userInfo.Password = hashedPassword
+
+	err = n.userRepo.UpdateUser(userInfo, companyId)
+	if err != nil {
+		return errors.New("failed to update the user")
+	}
+
+	err = n.companyRepo.UpdateCompany(updateCompany.ToCompany(), companyId)
+	if err != nil {
+		return errors.New("failed to update the company")
+	}
+
+	return nil
+}
+
+func (n *companyService) DeleteCompany(companyId int) error {
+	company, err := n.companyRepo.GetCompanyById(companyId)
+	if err != nil {
+		return errors.New("failed to get the company")
+	}
+
+	err = n.companyRepo.DeleteCompany(companyId)
+	if err != nil {
+		return errors.New("failed to delete the company")
+	}
+
+	err = n.userRepo.DeleteUser(company.UserId)
+	if err != nil {
+		return errors.New("failed to delete user")
+	}
+
+	return nil
+}

@@ -59,6 +59,14 @@ func (n *userRepo) GetUserById(id int) (model.User, error) {
 	return user, nil
 }
 
+func (n *userRepo) UpdateUser(user model.User, userId int) error {
+	if err := n.db.Model(model.User{}).Where("id = ?", userId).Updates(user).Error; err != nil {
+		return errors.New("failed to update the user")
+	}
+
+	return nil
+}
+
 func (n *userRepo) DeleteUser(userId int) error {
 	err := n.db.Model(model.User{}).Where("id = ?", userId).Delete(&model.User{}).Error
 	if err != nil {

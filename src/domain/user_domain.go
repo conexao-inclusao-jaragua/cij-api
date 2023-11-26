@@ -7,5 +7,6 @@ type UserRepo interface {
 	ListUsers() ([]model.User, error)
 	GetUserByEmail(email string) (model.User, error)
 	GetUserById(id int) (model.User, error)
+	UpdateUser(user model.User, userId int) error
 	DeleteUser(id int) error
 }
