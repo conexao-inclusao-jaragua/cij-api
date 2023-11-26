@@ -22,8 +22,9 @@ func NewAuthController(
 	authService AuthService, personService domain.PersonService, companyService domain.CompanyService,
 ) *AuthController {
 	return &AuthController{
-		authService:   authService,
-		personService: personService,
+		authService:    authService,
+		personService:  personService,
+		companyService: companyService,
 	}
 }
 
