@@ -75,3 +75,40 @@ func (n *personService) GetPersonByUserId(userId int) (model.Person, error) {
 
 	return person, nil
 }
+
+func (n *personService) UpdatePerson(person model.PersonRequest, personId int) error {
+	userInfo := person.ToUser()
+
+	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
+	if err != nil {
+		return errors.New("error on encrypt user password")
+	}
+
+	userInfo.Password = hashedPassword
+
+	err = n.userRepo.UpdateUser(userInfo, personId)
+	if err != nil {
+		return errors.New("failed to update user")
+	}
+
+	err = n.personRepo.UpdatePerson(person.ToPerson(), personId)
+	if err != nil {
+		return errors.New("failed to update person")
+	}
+
+	return nil
+}
+
+func (n *personService) DeletePerson(personId int) error {
+	err := n.personRepo.DeletePerson(personId)
+	if err != nil {
+		return errors.New("failed to delete person")
+	}
+
+	err = n.userRepo.DeleteUser(personId)
+	if err != nil {
+		return errors.New("failed to delete user")
+	}
+
+	return nil
+}
