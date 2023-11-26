@@ -37,10 +37,10 @@ func (n *companyRepo) ListCompanies() ([]model.Company, error) {
 	return companies, nil
 }
 
-func (n *companyRepo) GetCompanyByEmail(email string) (model.Company, error) {
+func (n *companyRepo) GetCompanyByUserId(userId int) (model.Company, error) {
 	var company model.Company
 
-	err := n.db.Model(model.Company{}).Where("email = ?", email).Find(&company).Error
+	err := n.db.Model(model.Company{}).Preload("User").Where("user_id = ?", userId).Find(&company).Error
 	if err != nil {
 		return company, errors.New("failed to get the company")
 	}
