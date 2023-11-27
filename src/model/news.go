@@ -7,9 +7,9 @@ type News struct {
 	Id          int    `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
 	Title       string `gorm:"type:varchar(200);not null" json:"title"`
 	Description string `gorm:"type:text;not null" json:"description"`
-	Banner      string `gorm:"type:blob;not null" json:"banner"`
+	Banner      string `gorm:"type:blob;" json:"banner"`
 	Author      string `gorm:"type:varchar(200);not null" json:"author"`
-	AuthorImage string `gorm:"type:blob;not null" json:"author_image"`
+	AuthorImage string `gorm:"type:blob;" json:"author_image"`
 	Date        string `gorm:"type:date;not null" json:"date"`
 }
 
