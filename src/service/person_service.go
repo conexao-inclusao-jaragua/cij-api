@@ -8,14 +8,16 @@ import (
 )
 
 type personService struct {
-	personRepo domain.PersonRepo
-	userRepo   domain.UserRepo
+	personRepo  domain.PersonRepo
+	userRepo    domain.UserRepo
+	addressRepo domain.AddressRepo
 }
 
-func NewPersonService(personRepo domain.PersonRepo, userRepo domain.UserRepo) domain.PersonService {
+func NewPersonService(personRepo domain.PersonRepo, userRepo domain.UserRepo, addressRepo domain.AddressRepo) domain.PersonService {
 	return &personService{
-		personRepo: personRepo,
-		userRepo:   userRepo,
+		personRepo:  personRepo,
+		userRepo:    userRepo,
+		addressRepo: addressRepo,
 	}
 }
 
@@ -33,7 +35,20 @@ func (s *personService) ListPeople() ([]model.PersonResponse, error) {
 			return peopleResponse, errors.New("failed to get user")
 		}
 
-		peopleResponse = append(peopleResponse, person.ToResponse(user))
+		personResponse := person.ToResponse(user)
+
+		address, err := s.addressRepo.GetAddressById(*person.AddressId)
+		if err != nil {
+			return peopleResponse, errors.New("failed to get address")
+		}
+
+		if address.Id != 0 {
+			var addressResponse model.AddressResponse
+			addressResponse = address.ToResponse()
+			personResponse.Address = &addressResponse
+		}
+
+		peopleResponse = append(peopleResponse, personResponse)
 	}
 
 	return peopleResponse, nil
@@ -55,12 +70,15 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) error {
 		return errors.New("error on create user")
 	}
 
-	personInfo := createPerson.ToPerson(userInfo)
+	personInfo := createPerson.ToModel(userInfo)
 	personInfo.UserId = userId
 
 	err = n.personRepo.CreatePerson(personInfo)
 	if err != nil {
-		n.userRepo.DeleteUser(userId)
+		err = n.userRepo.DeleteUserPermanent(userId)
+		if err != nil {
+			return errors.New("error on delete user")
+		}
 
 		return errors.New("error on create person")
 	}
@@ -92,9 +110,42 @@ func (n *personService) UpdatePerson(updatePerson model.PersonRequest, personId 
 		return errors.New("failed to update user")
 	}
 
-	personInfo := updatePerson.ToPerson(userInfo)
+	personInfo := updatePerson.ToModel(userInfo)
 
 	err = n.personRepo.UpdatePerson(personInfo, personId)
+	if err != nil {
+		return errors.New("failed to update person")
+	}
+
+	return nil
+}
+
+func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, personId int) error {
+	addressInfo := updateAddress.ToModel()
+
+	person, err := n.personRepo.GetPersonById(personId)
+	if err != nil {
+		return errors.New("failed to get person")
+	}
+
+	if person.AddressId != nil {
+		address, err := n.addressRepo.GetAddressById(*person.AddressId)
+		if err != nil {
+			return errors.New("failed to get address")
+		}
+
+		addressInfo.Id = *person.AddressId
+		addressInfo.CreatedAt = address.CreatedAt
+	}
+
+	addressId, err := n.addressRepo.UpsertAddress(addressInfo)
+	if err != nil {
+		return errors.New("failed to upsert address")
+	}
+
+	person.AddressId = &addressId
+
+	err = n.personRepo.UpdatePerson(person, personId)
 	if err != nil {
 		return errors.New("failed to update person")
 	}
@@ -116,6 +167,11 @@ func (n *personService) DeletePerson(personId int) error {
 	err = n.userRepo.DeleteUser(person.UserId)
 	if err != nil {
 		return errors.New("failed to delete user")
+	}
+
+	err = n.addressRepo.DeleteAddress(*person.AddressId)
+	if err != nil {
+		return errors.New("failed to delete address")
 	}
 
 	return nil

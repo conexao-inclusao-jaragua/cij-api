@@ -3,7 +3,7 @@ package model
 import "gorm.io/gorm"
 
 type Company struct {
-	gorm.Model
+	*gorm.Model
 	Id     int    `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
 	Name   string `gorm:"type:varchar(200);not null" json:"name"`
 	Cnpj   string `gorm:"type:char(14);not null;unique" json:"cnpj"`
