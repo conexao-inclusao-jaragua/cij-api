@@ -38,6 +38,7 @@ func main() {
 
 func migrateDb(db *gorm.DB) {
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Address{})
 	db.AutoMigrate(&model.Person{})
 	db.AutoMigrate(&model.Company{})
 	db.AutoMigrate(&model.News{})

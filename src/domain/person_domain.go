@@ -16,5 +16,6 @@ type PersonService interface {
 	ListPeople() ([]model.PersonResponse, error)
 	GetPersonByUserId(userId int) (model.Person, error)
 	UpdatePerson(person model.PersonRequest, personId int) error
+	UpdatePersonAddress(address model.AddressRequest, personId int) error
 	DeletePerson(personId int) error
 }

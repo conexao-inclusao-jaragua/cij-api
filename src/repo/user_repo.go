@@ -75,3 +75,12 @@ func (n *userRepo) DeleteUser(userId int) error {
 
 	return nil
 }
+
+func (n *userRepo) DeleteUserPermanent(userId int) error {
+	err := n.db.Model(model.User{}).Where("id = ?", userId).Unscoped().Delete(&model.User{}).Error
+	if err != nil {
+		return errors.New("failed to delete the user")
+	}
+
+	return nil
+}

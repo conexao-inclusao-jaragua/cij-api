@@ -15,6 +15,42 @@ definitions:
     - Male
     - Female
     - Other
+  model.AddressRequest:
+    properties:
+      city:
+        type: string
+      complement:
+        type: string
+      neighborhood:
+        type: string
+      number:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      zip_code:
+        type: string
+    type: object
+  model.AddressResponse:
+    properties:
+      city:
+        type: string
+      complement:
+        type: string
+      id:
+        type: integer
+      neighborhood:
+        type: string
+      number:
+        type: string
+      state:
+        type: string
+      street:
+        type: string
+      zip_code:
+        type: string
+    type: object
   model.CompanyRequest:
     properties:
       cnpj:
@@ -69,6 +105,8 @@ definitions:
     type: object
   model.PersonRequest:
     properties:
+      address:
+        $ref: '#/definitions/model.AddressRequest'
       cpf:
         type: string
       gender:
@@ -82,6 +120,8 @@ definitions:
     type: object
   model.PersonResponse:
     properties:
+      address:
+        $ref: '#/definitions/model.AddressResponse'
       cpf:
         type: string
       gender:
@@ -119,34 +159,6 @@ info:
   version: "1.0"
 paths:
   /companies:
-    delete:
-      consumes:
-      - '*/*'
-      description: delete an existent company and their user.
-      parameters:
-      - description: Company ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            type: string
-        "400":
-          description: bad request
-          schema:
-            type: string
-        "500":
-          description: internal server error
-          schema:
-            type: string
-      summary: Delete a company.
-      tags:
-      - Companies
     get:
       consumes:
       - '*/*'
@@ -198,6 +210,35 @@ paths:
           schema:
             type: string
       summary: Create a new company.
+      tags:
+      - Companies
+  /companies/:id:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete an existent company and their user.
+      parameters:
+      - description: Company ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Delete a company.
       tags:
       - Companies
     put:
@@ -336,34 +377,6 @@ paths:
       tags:
       - News
   /people:
-    delete:
-      consumes:
-      - '*/*'
-      description: delete an existent person and their user.
-      parameters:
-      - description: Person ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: success
-          schema:
-            type: string
-        "400":
-          description: bad request
-          schema:
-            type: string
-        "500":
-          description: internal server error
-          schema:
-            type: string
-      summary: Delete a person.
-      tags:
-      - People
     get:
       consumes:
       - '*/*'
@@ -417,6 +430,35 @@ paths:
       summary: Create a new person.
       tags:
       - People
+  /people/:id:
+    delete:
+      consumes:
+      - '*/*'
+      description: delete an existent person and their user.
+      parameters:
+      - description: Person ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Delete a person.
+      tags:
+      - People
     put:
       consumes:
       - '*/*'
@@ -449,6 +491,41 @@ paths:
           schema:
             type: string
       summary: Update a person.
+      tags:
+      - People
+  /people/:id/address:
+    put:
+      consumes:
+      - '*/*'
+      description: update an existent person address.
+      parameters:
+      - description: Address
+        in: body
+        name: address
+        required: true
+        schema:
+          $ref: '#/definitions/model.AddressRequest'
+      - description: Person ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Update a person address.
       tags:
       - People
 swagger: "2.0"
