@@ -67,6 +67,34 @@ func (n *personRepo) UpdatePerson(person model.Person, personId int) error {
 	return nil
 }
 
+func (n *personRepo) UpsertPersonDisability(disability model.Disability, personId int) error {
+	var person model.Person
+
+	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Find(&person).Error; err != nil {
+		return errors.New("failed to get the person")
+	}
+
+	if err := n.db.Model(&person).Association("Disabilities").Append(&disability); err != nil {
+		return errors.New("failed to upsert the person disability")
+	}
+
+	return nil
+}
+
+func (n *personRepo) ClearPersonDisability(personId int) error {
+	var person model.Person
+
+	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Find(&person).Error; err != nil {
+		return errors.New("failed to get the person")
+	}
+
+	if err := n.db.Model(&person).Association("Disabilities").Clear(); err != nil {
+		return errors.New("failed to clear the person disability")
+	}
+
+	return nil
+}
+
 func (n *personRepo) DeletePerson(personId int) error {
 	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Delete(&model.Person{}).Error; err != nil {
 		return errors.New("failed to delete the person")

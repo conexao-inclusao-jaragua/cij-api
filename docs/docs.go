@@ -578,6 +578,62 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/people/:id/disabilities": {
+            "put": {
+                "description": "update an existent person disabilities.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "People"
+                ],
+                "summary": "Update a person disabilities.",
+                "parameters": [
+                    {
+                        "description": "Disabilities",
+                        "name": "disabilities",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Person ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -705,6 +761,31 @@ const docTemplate = `{
                 }
             }
         },
+        "model.DisabilityRequest": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DisabilityResponse": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.LoginResponse": {
             "type": "object",
             "properties": {
@@ -746,6 +827,12 @@ const docTemplate = `{
                 "cpf": {
                     "type": "string"
                 },
+                "disabilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DisabilityRequest"
+                    }
+                },
                 "gender": {
                     "$ref": "#/definitions/enum.GenderEnum"
                 },
@@ -768,6 +855,12 @@ const docTemplate = `{
                 },
                 "cpf": {
                     "type": "string"
+                },
+                "disabilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DisabilityResponse"
+                    }
                 },
                 "gender": {
                     "$ref": "#/definitions/enum.GenderEnum"

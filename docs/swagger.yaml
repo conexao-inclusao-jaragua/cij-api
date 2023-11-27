@@ -82,6 +82,22 @@ definitions:
       password:
         type: string
     type: object
+  model.DisabilityRequest:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+    type: object
+  model.DisabilityResponse:
+    properties:
+      category:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+    type: object
   model.LoginResponse:
     properties:
       message:
@@ -109,6 +125,10 @@ definitions:
         $ref: '#/definitions/model.AddressRequest'
       cpf:
         type: string
+      disabilities:
+        items:
+          $ref: '#/definitions/model.DisabilityRequest'
+        type: array
       gender:
         $ref: '#/definitions/enum.GenderEnum'
       name:
@@ -124,6 +144,10 @@ definitions:
         $ref: '#/definitions/model.AddressResponse'
       cpf:
         type: string
+      disabilities:
+        items:
+          $ref: '#/definitions/model.DisabilityResponse'
+        type: array
       gender:
         $ref: '#/definitions/enum.GenderEnum'
       id:
@@ -526,6 +550,43 @@ paths:
           schema:
             type: string
       summary: Update a person address.
+      tags:
+      - People
+  /people/:id/disabilities:
+    put:
+      consumes:
+      - '*/*'
+      description: update an existent person disabilities.
+      parameters:
+      - description: Disabilities
+        in: body
+        name: disabilities
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      - description: Person ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Update a person disabilities.
       tags:
       - People
 swagger: "2.0"
