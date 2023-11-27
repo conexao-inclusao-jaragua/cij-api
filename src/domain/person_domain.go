@@ -8,6 +8,8 @@ type PersonRepo interface {
 	GetPersonById(personId int) (model.Person, error)
 	GetPersonByUserId(userId int) (model.Person, error)
 	UpdatePerson(person model.Person, personId int) error
+	UpsertPersonDisability(disability model.Disability, personId int) error
+	ClearPersonDisability(personId int) error
 	DeletePerson(personId int) error
 }
 
@@ -17,5 +19,6 @@ type PersonService interface {
 	GetPersonByUserId(userId int) (model.Person, error)
 	UpdatePerson(person model.PersonRequest, personId int) error
 	UpdatePersonAddress(address model.AddressRequest, personId int) error
+	UpdatePersonDisabilities(disabilities []int, personId int) error
 	DeletePerson(personId int) error
 }

@@ -153,6 +153,36 @@ func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, 
 	return nil
 }
 
+func (n *personService) UpdatePersonDisabilities(disabilities []int, personId int) error {
+	person, err := n.personRepo.GetPersonById(personId)
+	if err != nil {
+		return errors.New("failed to get person")
+	}
+
+	err = n.personRepo.ClearPersonDisability(personId)
+	if err != nil {
+		return errors.New("failed to clear person disability")
+	}
+
+	for _, disabilityId := range disabilities {
+		disability := model.Disability{
+			Id: disabilityId,
+		}
+
+		err = n.personRepo.UpsertPersonDisability(disability, personId)
+		if err != nil {
+			return errors.New("failed to upsert person disability")
+		}
+	}
+
+	err = n.personRepo.UpdatePerson(person, personId)
+	if err != nil {
+		return errors.New("failed to update person")
+	}
+
+	return nil
+}
+
 func (n *personService) DeletePerson(personId int) error {
 	person, err := n.personRepo.GetPersonById(personId)
 	if err != nil {
