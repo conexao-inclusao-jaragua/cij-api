@@ -55,7 +55,16 @@ func (n *companyService) CreateCompany(createCompany model.CompanyRequest) error
 		return errors.New("error on create user")
 	}
 
-	companyInfo := createCompany.ToCompany(userInfo)
+	addressInfo := createCompany.ToAddress()
+
+	addressId, err := n.userRepo.CreateAddress(addressInfo)
+	if err != nil {
+		n.userRepo.DeleteUser(userId)
+
+		return errors.New("error on create address")
+	}
+
+	companyInfo := createCompany.ToModel(userInfo)
 	companyInfo.UserId = userId
 
 	err = n.companyRepo.CreateCompany(companyInfo)
@@ -92,7 +101,7 @@ func (n *companyService) UpdateCompany(updateCompany model.CompanyRequest, compa
 		return errors.New("failed to update the user")
 	}
 
-	companyInfo := updateCompany.ToCompany(userInfo)
+	companyInfo := updateCompany.ToModel(userInfo)
 
 	err = n.companyRepo.UpdateCompany(companyInfo, companyId)
 	if err != nil {
