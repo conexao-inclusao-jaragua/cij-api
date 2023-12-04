@@ -7,6 +7,7 @@ type PersonRepo interface {
 	ListPeople() ([]model.Person, error)
 	GetPersonById(personId int) (model.Person, error)
 	GetPersonByUserId(userId int) (model.Person, error)
+	GetPersonDisabilities(personId int) ([]model.Disability, error)
 	UpdatePerson(person model.Person, personId int) error
 	UpsertPersonDisability(disability model.Disability, personId int) error
 	ClearPersonDisability(personId int) error

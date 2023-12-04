@@ -37,15 +37,33 @@ func (s *personService) ListPeople() ([]model.PersonResponse, error) {
 
 		personResponse := person.ToResponse(user)
 
-		address, err := s.addressRepo.GetAddressById(*person.AddressId)
-		if err != nil {
-			return peopleResponse, errors.New("failed to get address")
+		if person.AddressId != nil {
+			address, err := s.addressRepo.GetAddressById(*person.AddressId)
+			if err != nil {
+				return peopleResponse, errors.New("failed to get address")
+			}
+
+			if address.Id != 0 {
+				var addressResponse model.AddressResponse
+				addressResponse = address.ToResponse()
+				personResponse.Address = &addressResponse
+			}
 		}
 
-		if address.Id != 0 {
-			var addressResponse model.AddressResponse
-			addressResponse = address.ToResponse()
-			personResponse.Address = &addressResponse
+		disabilities, err := s.personRepo.GetPersonDisabilities(person.Id)
+		if err != nil {
+			return peopleResponse, errors.New("failed to get person disabilities")
+		}
+
+		if len(disabilities) > 0 {
+			var disabilitiesResponse []model.DisabilityResponse
+
+			for _, disability := range disabilities {
+				disabilityResponse := disability.ToResponse()
+				disabilitiesResponse = append(disabilitiesResponse, disabilityResponse)
+			}
+
+			personResponse.Disabilities = &disabilitiesResponse
 		}
 
 		peopleResponse = append(peopleResponse, personResponse)
@@ -128,14 +146,8 @@ func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, 
 		return errors.New("failed to get person")
 	}
 
-	if person.AddressId != nil {
-		address, err := n.addressRepo.GetAddressById(*person.AddressId)
-		if err != nil {
-			return errors.New("failed to get address")
-		}
-
+	if *person.AddressId != 0 {
 		addressInfo.Id = *person.AddressId
-		addressInfo.CreatedAt = address.CreatedAt
 	}
 
 	addressId, err := n.addressRepo.UpsertAddress(addressInfo)

@@ -25,7 +25,7 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	personController := controller.NewPersonController(personService)
 
 	companyRepo := repo.NewCompanyRepo(db)
-	companyService := service.NewCompanyService(companyRepo, userRepo)
+	companyService := service.NewCompanyService(companyRepo, userRepo, addressRepo)
 	companyController := controller.NewCompanyController(companyService)
 
 	newsRepo := repo.NewNewsRepo(db)

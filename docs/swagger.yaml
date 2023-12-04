@@ -53,6 +53,8 @@ definitions:
     type: object
   model.CompanyRequest:
     properties:
+      address:
+        $ref: '#/definitions/model.AddressRequest'
       cnpj:
         type: string
       name:
@@ -64,6 +66,8 @@ definitions:
     type: object
   model.CompanyResponse:
     properties:
+      address:
+        $ref: '#/definitions/model.AddressResponse'
       cnpj:
         type: string
       id:
