@@ -10,12 +10,14 @@ import (
 type companyService struct {
 	companyRepo domain.CompanyRepo
 	userRepo    domain.UserRepo
+	addressRepo domain.AddressRepo
 }
 
-func NewCompanyService(companyRepo domain.CompanyRepo, userRepo domain.UserRepo) domain.CompanyService {
+func NewCompanyService(companyRepo domain.CompanyRepo, userRepo domain.UserRepo, addressRepo domain.AddressRepo) domain.CompanyService {
 	return &companyService{
 		companyRepo: companyRepo,
 		userRepo:    userRepo,
+		addressRepo: addressRepo,
 	}
 }
 
@@ -33,7 +35,20 @@ func (s *companyService) ListCompanies() ([]model.CompanyResponse, error) {
 			return companiesResponse, errors.New("failed to get user")
 		}
 
-		companiesResponse = append(companiesResponse, company.ToResponse(user))
+		companyResponse := company.ToResponse(user)
+
+		address, err := s.addressRepo.GetAddressById(*company.AddressId)
+		if err != nil {
+			return companiesResponse, errors.New("failed to get address")
+		}
+
+		if address.Id != 0 {
+			var addressResponse model.AddressResponse
+			addressResponse = address.ToResponse()
+			companyResponse.Address = addressResponse
+		}
+
+		companiesResponse = append(companiesResponse, companyResponse)
 	}
 
 	return companiesResponse, nil
@@ -57,7 +72,7 @@ func (n *companyService) CreateCompany(createCompany model.CompanyRequest) error
 
 	addressInfo := createCompany.ToAddress()
 
-	addressId, err := n.userRepo.CreateAddress(addressInfo)
+	addressId, err := n.addressRepo.UpsertAddress(addressInfo)
 	if err != nil {
 		n.userRepo.DeleteUser(userId)
 
@@ -66,10 +81,12 @@ func (n *companyService) CreateCompany(createCompany model.CompanyRequest) error
 
 	companyInfo := createCompany.ToModel(userInfo)
 	companyInfo.UserId = userId
+	companyInfo.AddressId = &addressId
 
 	err = n.companyRepo.CreateCompany(companyInfo)
 	if err != nil {
 		n.userRepo.DeleteUser(userId)
+		n.addressRepo.DeleteAddress(addressId)
 
 		return errors.New("error on create company")
 	}
@@ -101,7 +118,22 @@ func (n *companyService) UpdateCompany(updateCompany model.CompanyRequest, compa
 		return errors.New("failed to update the user")
 	}
 
+	addressInfo := updateCompany.ToAddress()
+
+	company, err := n.companyRepo.GetCompanyById(companyId)
+	if err != nil {
+		return errors.New("failed to get the company")
+	}
+
+	addressInfo.Id = *company.AddressId
+
+	addressId, err := n.addressRepo.UpsertAddress(addressInfo)
+	if err != nil {
+		return errors.New("error on create address")
+	}
+
 	companyInfo := updateCompany.ToModel(userInfo)
+	companyInfo.AddressId = &addressId
 
 	err = n.companyRepo.UpdateCompany(companyInfo, companyId)
 	if err != nil {
@@ -125,6 +157,11 @@ func (n *companyService) DeleteCompany(companyId int) error {
 	err = n.userRepo.DeleteUser(company.UserId)
 	if err != nil {
 		return errors.New("failed to delete user")
+	}
+
+	err = n.addressRepo.DeleteAddress(*company.AddressId)
+	if err != nil {
+		return errors.New("failed to delete address")
 	}
 
 	return nil

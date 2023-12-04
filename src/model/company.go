@@ -9,7 +9,7 @@ type Company struct {
 	Cnpj      string `gorm:"type:char(14);not null;unique" json:"cnpj"`
 	Phone     string `gorm:"type:char(13);not null" json:"phone"`
 	UserId    int    `gorm:"type:int;not null;unique" json:"user_id"`
-	AddressId *int   `gorm:"type:int;unique" json:"address_id"`
+	AddressId *int   `gorm:"type:int;not null;unique" json:"address_id"`
 	User      *User
 	Address   *Address
 }
@@ -31,14 +31,14 @@ type CompanyResponse struct {
 	Address AddressResponse `json:"address"`
 }
 
-func (c *Company) ToResponse(user User, address Address) CompanyResponse {
+func (c *Company) ToResponse(user User) CompanyResponse {
 	return CompanyResponse{
 		Id:      c.Id,
 		Name:    c.Name,
 		Cnpj:    c.Cnpj,
 		Phone:   c.Phone,
 		User:    user.ToResponse(),
-		Address: address.ToResponse(),
+		Address: c.Address.ToResponse(),
 	}
 }
 
@@ -59,12 +59,5 @@ func (c *CompanyRequest) ToUser() User {
 }
 
 func (c *CompanyRequest) ToAddress() Address {
-	return Address{
-		Street:     c.Address.Street,
-		Number:     c.Address.Number,
-		Complement: c.Address.Complement,
-		ZipCode:    c.Address.ZipCode,
-		City:       c.Address.City,
-		State:      c.Address.State,
-	}
+	return c.Address.ToModel()
 }

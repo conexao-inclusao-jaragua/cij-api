@@ -716,6 +716,9 @@ const docTemplate = `{
         "model.CompanyRequest": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressRequest"
+                },
                 "cnpj": {
                     "type": "string"
                 },
@@ -733,6 +736,9 @@ const docTemplate = `{
         "model.CompanyResponse": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressResponse"
+                },
                 "cnpj": {
                     "type": "string"
                 },

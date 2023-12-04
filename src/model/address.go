@@ -1,17 +1,22 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Address struct {
 	*gorm.Model
-	Id           int    `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
-	Street       string `gorm:"type:varchar(200);not null" json:"street"`
-	Number       string `gorm:"type:varchar(200);not null" json:"number"`
-	Neighborhood string `gorm:"type:varchar(200);not null" json:"neighborhood"`
-	City         string `gorm:"type:varchar(200);not null" json:"city"`
-	State        string `gorm:"type:char(2);not null" json:"state"`
-	ZipCode      string `gorm:"type:char(8);not null" json:"zip_code"`
-	Complement   string `gorm:"type:varchar(200);" json:"complement"`
+	CreatedAt    time.Time `gorm:"<-:create"`
+	Id           int       `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
+	Street       string    `gorm:"type:varchar(200);not null" json:"street"`
+	Number       string    `gorm:"type:varchar(200);not null" json:"number"`
+	Neighborhood string    `gorm:"type:varchar(200);not null" json:"neighborhood"`
+	City         string    `gorm:"type:varchar(200);not null" json:"city"`
+	State        string    `gorm:"type:char(2);not null" json:"state"`
+	ZipCode      string    `gorm:"type:char(8);not null" json:"zip_code"`
+	Complement   string    `gorm:"type:varchar(200);" json:"complement"`
 }
 
 type AddressRequest struct {
