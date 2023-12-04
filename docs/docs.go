@@ -55,6 +55,52 @@ const docTemplate = `{
                     }
                 }
             },
+            "post": {
+                "description": "create a new company and their user.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Companies"
+                ],
+                "summary": "Create a new company.",
+                "parameters": [
+                    {
+                        "description": "Company",
+                        "name": "company",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CompanyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/companies/:id": {
             "put": {
                 "description": "update an existent company and their user.",
                 "consumes": [
@@ -83,50 +129,6 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "bad request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "create a new company and their user.",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Companies"
-                ],
-                "summary": "Create a new company.",
-                "parameters": [
-                    {
-                        "description": "Company",
-                        "name": "company",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.CompanyRequest"
-                        }
                     }
                 ],
                 "responses": {
@@ -384,6 +386,52 @@ const docTemplate = `{
                     }
                 }
             },
+            "post": {
+                "description": "create a new person and their user.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "People"
+                ],
+                "summary": "Create a new person.",
+                "parameters": [
+                    {
+                        "description": "Person",
+                        "name": "person",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.PersonRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/people/:id": {
             "put": {
                 "description": "update an existent person and their user.",
                 "consumes": [
@@ -412,50 +460,6 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "success",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "bad request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "internal server error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "create a new person and their user.",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "People"
-                ],
-                "summary": "Create a new person.",
-                "parameters": [
-                    {
-                        "description": "Person",
-                        "name": "person",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.PersonRequest"
-                        }
                     }
                 ],
                 "responses": {
@@ -521,6 +525,115 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/people/:id/address": {
+            "put": {
+                "description": "update an existent person address.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "People"
+                ],
+                "summary": "Update a person address.",
+                "parameters": [
+                    {
+                        "description": "Address",
+                        "name": "address",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AddressRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Person ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/people/:id/disabilities": {
+            "put": {
+                "description": "update an existent person disabilities.",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "People"
+                ],
+                "summary": "Update a person disabilities.",
+                "parameters": [
+                    {
+                        "description": "Disabilities",
+                        "name": "disabilities",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Person ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -545,9 +658,67 @@ const docTemplate = `{
                 "Other"
             ]
         },
+        "model.AddressRequest": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "complement": {
+                    "type": "string"
+                },
+                "neighborhood": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AddressResponse": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "complement": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "neighborhood": {
+                    "type": "string"
+                },
+                "number": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                },
+                "zip_code": {
+                    "type": "string"
+                }
+            }
+        },
         "model.CompanyRequest": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressRequest"
+                },
                 "cnpj": {
                     "type": "string"
                 },
@@ -565,6 +736,9 @@ const docTemplate = `{
         "model.CompanyResponse": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressResponse"
+                },
                 "cnpj": {
                     "type": "string"
                 },
@@ -590,6 +764,31 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "model.DisabilityRequest": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DisabilityResponse": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 }
             }
         },
@@ -628,8 +827,17 @@ const docTemplate = `{
         "model.PersonRequest": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressRequest"
+                },
                 "cpf": {
                     "type": "string"
+                },
+                "disabilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DisabilityRequest"
+                    }
                 },
                 "gender": {
                     "$ref": "#/definitions/enum.GenderEnum"
@@ -648,8 +856,17 @@ const docTemplate = `{
         "model.PersonResponse": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressResponse"
+                },
                 "cpf": {
                     "type": "string"
+                },
+                "disabilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DisabilityResponse"
+                    }
                 },
                 "gender": {
                     "$ref": "#/definitions/enum.GenderEnum"

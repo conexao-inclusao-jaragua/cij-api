@@ -106,7 +106,7 @@ func (n *PersonController) ListPeople(ctx *fiber.Ctx) error {
 // @Success 200 {object} string "success"
 // @Failure 400 {object} string "bad request"
 // @Failure 500 {object} string "internal server error"
-// @Router /people [put]
+// @Router /people/:id [put]
 func (n *PersonController) UpdatePerson(ctx *fiber.Ctx) error {
 	var personRequest model.PersonRequest
 	var response model.Response
@@ -145,6 +145,106 @@ func (n *PersonController) UpdatePerson(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response)
 }
 
+// UpdatePersonAddress
+// @Summary Update a person address.
+// @Description update an existent person address.
+// @Tags People
+// @Accept */*
+// @Produce json
+// @Param address body model.AddressRequest true "Address"
+// @Param id path string true "Person ID"
+// @Success 200 {object} string "success"
+// @Failure 400 {object} string "bad request"
+// @Failure 500 {object} string "internal server error"
+// @Router /people/:id/address [put]
+func (n *PersonController) UpdatePersonAddress(ctx *fiber.Ctx) error {
+	var addressRequest model.AddressRequest
+	var response model.Response
+
+	if err := ctx.BodyParser(&addressRequest); err != nil {
+		response = model.Response{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	personId := ctx.Params("id")
+
+	idInt, err := strconv.Atoi(personId)
+	if err != nil {
+		response = model.Response{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	if err := n.personService.UpdatePersonAddress(addressRequest, idInt); err != nil {
+		response = model.Response{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusInternalServerError).JSON(response)
+	}
+
+	response = model.Response{
+		Message: "success",
+	}
+
+	return ctx.Status(http.StatusOK).JSON(response)
+}
+
+// UpdatePersonDisabilities
+// @Summary Update a person disabilities.
+// @Description update an existent person disabilities.
+// @Tags People
+// @Accept */*
+// @Produce json
+// @Param disabilities body []int true "Disabilities"
+// @Param id path string true "Person ID"
+// @Success 200 {object} string "success"
+// @Failure 400 {object} string "bad request"
+// @Failure 500 {object} string "internal server error"
+// @Router /people/:id/disabilities [put]
+func (n *PersonController) UpdatePersonDisabilities(ctx *fiber.Ctx) error {
+	var disabilities []int
+	var response model.Response
+
+	if err := ctx.BodyParser(&disabilities); err != nil {
+		response = model.Response{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	personId := ctx.Params("id")
+
+	idInt, err := strconv.Atoi(personId)
+	if err != nil {
+		response = model.Response{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	if err := n.personService.UpdatePersonDisabilities(disabilities, idInt); err != nil {
+		response = model.Response{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusInternalServerError).JSON(response)
+	}
+
+	response = model.Response{
+		Message: "success",
+	}
+
+	return ctx.Status(http.StatusOK).JSON(response)
+}
+
 // DeletePerson
 // @Summary Delete a person.
 // @Description delete an existent person and their user.
@@ -155,7 +255,7 @@ func (n *PersonController) UpdatePerson(ctx *fiber.Ctx) error {
 // @Success 200 {object} string "success"
 // @Failure 400 {object} string "bad request"
 // @Failure 500 {object} string "internal server error"
-// @Router /people [delete]
+// @Router /people/:id [delete]
 func (n *PersonController) DeletePerson(ctx *fiber.Ctx) error {
 	var response model.Response
 

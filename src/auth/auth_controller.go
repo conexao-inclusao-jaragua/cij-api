@@ -12,6 +12,7 @@ type AuthController struct {
 	authService    AuthService
 	personService  domain.PersonService
 	companyService domain.CompanyService
+	addressService domain.AddressService
 }
 
 type TokenRequest struct {
@@ -19,12 +20,13 @@ type TokenRequest struct {
 }
 
 func NewAuthController(
-	authService AuthService, personService domain.PersonService, companyService domain.CompanyService,
+	authService AuthService, personService domain.PersonService, companyService domain.CompanyService, addressService domain.AddressService,
 ) *AuthController {
 	return &AuthController{
 		authService:    authService,
 		personService:  personService,
 		companyService: companyService,
+		addressService: addressService,
 	}
 }
 
@@ -134,8 +136,27 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 			return ctx.Status(http.StatusInternalServerError).JSON(response)
 		}
 
+		personResponse := person.ToResponse(user)
+
+		if person.AddressId != nil {
+			address, err := c.addressService.GetAddressById(*person.AddressId)
+			if err != nil {
+				response = model.LoginResponse{
+					Message: err.Error(),
+				}
+
+				return ctx.Status(http.StatusInternalServerError).JSON(response)
+			}
+
+			if address.Id != 0 {
+				var addressResponse model.AddressResponse
+				addressResponse = address.ToResponse()
+				personResponse.Address = &addressResponse
+			}
+		}
+
 		response = model.LoginResponse{
-			UserInfo: person.ToResponse(user),
+			UserInfo: personResponse,
 		}
 
 		return ctx.Status(http.StatusOK).JSON(response)

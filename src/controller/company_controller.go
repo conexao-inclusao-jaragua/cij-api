@@ -106,7 +106,7 @@ func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 // @Success 200 {object} string "success"
 // @Failure 400 {object} string "bad request"
 // @Failure 500 {object} string "internal server error"
-// @Router /companies [put]
+// @Router /companies/:id [put]
 func (n *CompanyController) UpdateCompany(ctx *fiber.Ctx) error {
 	var companyRequest model.CompanyRequest
 	var response model.Response
@@ -155,7 +155,7 @@ func (n *CompanyController) UpdateCompany(ctx *fiber.Ctx) error {
 // @Success 200 {object} string "success"
 // @Failure 400 {object} string "bad request"
 // @Failure 500 {object} string "internal server error"
-// @Router /companies [delete]
+// @Router /companies/:id [delete]
 func (n *CompanyController) DeleteCompany(ctx *fiber.Ctx) error {
 	var response model.Response
 

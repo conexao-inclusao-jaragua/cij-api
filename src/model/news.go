@@ -3,7 +3,7 @@ package model
 import "gorm.io/gorm"
 
 type News struct {
-	gorm.Model
+	*gorm.Model
 	Id          int    `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
 	Title       string `gorm:"type:varchar(200);not null" json:"title"`
 	Description string `gorm:"type:text;not null" json:"description"`

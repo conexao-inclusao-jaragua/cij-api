@@ -29,7 +29,7 @@ func (n *companyRepo) CreateCompany(createCompany model.Company) error {
 func (n *companyRepo) ListCompanies() ([]model.Company, error) {
 	var companies []model.Company
 
-	err := n.db.Model(model.Company{}).Find(&companies).Error
+	err := n.db.Model(model.Company{}).Preload("User").Preload("Address").Find(&companies).Error
 	if err != nil {
 		return companies, errors.New("error on list companies from database")
 	}
