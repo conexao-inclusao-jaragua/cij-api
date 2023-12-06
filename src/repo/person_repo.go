@@ -59,6 +59,17 @@ func (n *personRepo) GetPersonByUserId(userId int) (model.Person, error) {
 	return person, nil
 }
 
+func (n *personRepo) GetPersonByCpf(cpf string) (model.Person, error) {
+	var person model.Person
+
+	err := n.db.Model(model.Person{}).Preload("User").Where("cpf = ?", cpf).Find(&person).Error
+	if err != nil {
+		return person, errors.New("failed to get the person")
+	}
+
+	return person, nil
+}
+
 func (n *personRepo) GetPersonDisabilities(personId int) ([]model.Disability, error) {
 	var disabilities []model.Disability
 	var person model.Person
@@ -72,6 +83,16 @@ func (n *personRepo) GetPersonDisabilities(personId int) ([]model.Disability, er
 	}
 
 	return disabilities, nil
+}
+
+func (n *personRepo) GetDisabilityById(disabilityId int) (model.Disability, error) {
+	var disability model.Disability
+
+	if err := n.db.Model(model.Disability{}).Where("id = ?", disabilityId).Find(&disability).Error; err != nil {
+		return disability, errors.New("failed to get the disability")
+	}
+
+	return disability, nil
 }
 
 func (n *personRepo) UpdatePerson(person model.Person, personId int) error {
