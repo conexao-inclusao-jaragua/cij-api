@@ -2,6 +2,8 @@ package model
 
 type Response struct {
 	Message string      `json:"message"`
+	Code    string      `json:"code,omitempty"`
+	Fields  []string    `json:"fields,omitempty"`
 	Data    interface{} `json:"data,omitempty"`
 }
 

@@ -4,7 +4,7 @@ import (
 	"cij_api/src/auth"
 	"cij_api/src/domain"
 	"cij_api/src/model"
-	"errors"
+	"cij_api/src/utils"
 )
 
 type personService struct {
@@ -21,18 +21,18 @@ func NewPersonService(personRepo domain.PersonRepo, userRepo domain.UserRepo, ad
 	}
 }
 
-func (s *personService) ListPeople() ([]model.PersonResponse, error) {
+func (s *personService) ListPeople() ([]model.PersonResponse, utils.Error) {
 	peopleResponse := []model.PersonResponse{}
 
 	people, err := s.personRepo.ListPeople()
 	if err != nil {
-		return peopleResponse, errors.New("failed to list people")
+		return peopleResponse, utils.FailedToListPeople
 	}
 
 	for _, person := range people {
 		user, err := s.userRepo.GetUserById(person.User.Id)
 		if err != nil {
-			return peopleResponse, errors.New("failed to get user")
+			return peopleResponse, utils.FailedToGetUser
 		}
 
 		personResponse := person.ToResponse(user)
@@ -40,7 +40,7 @@ func (s *personService) ListPeople() ([]model.PersonResponse, error) {
 		if person.AddressId != nil {
 			address, err := s.addressRepo.GetAddressById(*person.AddressId)
 			if err != nil {
-				return peopleResponse, errors.New("failed to get address")
+				return peopleResponse, utils.FailedToGetAddress
 			}
 
 			if address.Id != 0 {
@@ -52,7 +52,7 @@ func (s *personService) ListPeople() ([]model.PersonResponse, error) {
 
 		disabilities, err := s.personRepo.GetPersonDisabilities(person.Id)
 		if err != nil {
-			return peopleResponse, errors.New("failed to get person disabilities")
+			return peopleResponse, utils.FailedToGetDisability
 		}
 
 		if len(disabilities) > 0 {
@@ -69,15 +69,15 @@ func (s *personService) ListPeople() ([]model.PersonResponse, error) {
 		peopleResponse = append(peopleResponse, personResponse)
 	}
 
-	return peopleResponse, nil
+	return peopleResponse, utils.Error{}
 }
 
-func (n *personService) CreatePerson(createPerson model.PersonRequest) error {
+func (n *personService) CreatePerson(createPerson model.PersonRequest) utils.Error {
 	userInfo := createPerson.ToUser()
 
 	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
 	if err != nil {
-		return errors.New("error on encrypt user password")
+		return utils.FailedToEncryptPassword
 	}
 
 	userInfo.Password = hashedPassword
@@ -85,7 +85,7 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) error {
 
 	userId, err := n.userRepo.CreateUser(userInfo)
 	if err != nil {
-		return errors.New("error on create user")
+		return utils.FailedToCreateUser
 	}
 
 	personInfo := createPerson.ToModel(userInfo)
@@ -95,85 +95,121 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) error {
 	if err != nil {
 		err = n.userRepo.DeleteUserPermanent(userId)
 		if err != nil {
-			return errors.New("error on delete user")
+			return utils.FailedToDeleteUser
 		}
 
-		return errors.New("error on create person")
+		return utils.FailedToCreatePerson
 	}
 
-	return nil
+	return utils.Error{}
 }
 
-func (n *personService) GetPersonByUserId(userId int) (model.Person, error) {
+func (n *personService) GetPersonByUserId(userId int) (model.Person, utils.Error) {
 	person, err := n.personRepo.GetPersonByUserId(userId)
 	if err != nil {
-		return person, errors.New("failed to get person")
+		return person, utils.FailedToGetPerson
 	}
 
-	return person, nil
+	return person, utils.Error{}
 }
 
-func (n *personService) UpdatePerson(updatePerson model.PersonRequest, personId int) error {
+func (n *personService) GetPersonById(personId int) (model.Person, utils.Error) {
+	person, err := n.personRepo.GetPersonById(personId)
+	if err != nil {
+		return person, utils.FailedToGetPerson
+	}
+
+	return person, utils.Error{}
+}
+
+func (n *personService) GetPersonByCpf(cpf string) (model.Person, utils.Error) {
+	person, err := n.personRepo.GetPersonByCpf(cpf)
+	if err != nil {
+		return person, utils.FailedToGetPerson
+	}
+
+	return person, utils.Error{}
+}
+
+func (n *personService) GetUserByEmail(email string) (model.User, utils.Error) {
+	user, err := n.userRepo.GetUserByEmail(email)
+	if err != nil {
+		return user, utils.FailedToGetUser
+	}
+
+	return user, utils.Error{}
+}
+
+func (n *personService) UpdatePerson(updatePerson model.PersonRequest, personId int) utils.Error {
 	userInfo := updatePerson.ToUser()
 
 	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
 	if err != nil {
-		return errors.New("error on encrypt user password")
+		return utils.FailedToEncryptPassword
 	}
 
 	userInfo.Password = hashedPassword
 
 	err = n.userRepo.UpdateUser(userInfo, personId)
 	if err != nil {
-		return errors.New("failed to update user")
+		return utils.FailedToUpdateUser
 	}
 
 	personInfo := updatePerson.ToModel(userInfo)
 
 	err = n.personRepo.UpdatePerson(personInfo, personId)
 	if err != nil {
-		return errors.New("failed to update person")
+		return utils.FailedToUpdatePerson
 	}
 
-	return nil
+	return utils.Error{}
 }
 
-func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, personId int) error {
+func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, personId int) utils.Error {
 	addressInfo := updateAddress.ToModel()
 
 	person, err := n.personRepo.GetPersonById(personId)
 	if err != nil {
-		return errors.New("failed to get person")
+		return utils.FailedToGetPerson
 	}
 
-	if *person.AddressId != 0 {
+	if person.AddressId != nil {
 		addressInfo.Id = *person.AddressId
 	}
 
 	addressId, err := n.addressRepo.UpsertAddress(addressInfo)
 	if err != nil {
-		return errors.New("failed to upsert address")
+		return utils.FailedToUpsertAddress
 	}
 
 	person.AddressId = &addressId
 
 	err = n.personRepo.UpdatePerson(person, personId)
 	if err != nil {
-		return errors.New("failed to update person")
+		return utils.FailedToUpdatePerson
 	}
 
-	return nil
+	return utils.Error{}
 }
 
-func (n *personService) UpdatePersonDisabilities(disabilities []int, personId int) error {
+func (n *personService) GetDisabilityById(id int) (model.Disability, utils.Error) {
+	disability, err := n.personRepo.GetDisabilityById(id)
+	if err != nil {
+		return disability, utils.FailedToGetDisability
+	}
+
+	return disability, utils.Error{}
+}
+
+func (n *personService) UpdatePersonDisabilities(disabilities []int, personId int) utils.Error {
 	person, err := n.personRepo.GetPersonById(personId)
 	if err != nil {
-		return errors.New("failed to get person")
+		return utils.FailedToGetPerson
 	}
 
 	err = n.personRepo.ClearPersonDisability(personId)
 	if err != nil {
-		return errors.New("failed to clear person disability")
+		return utils.FailedToClearDisability
 	}
 
 	for _, disabilityId := range disabilities {
@@ -183,38 +219,38 @@ func (n *personService) UpdatePersonDisabilities(disabilities []int, personId in
 
 		err = n.personRepo.UpsertPersonDisability(disability, personId)
 		if err != nil {
-			return errors.New("failed to upsert person disability")
+			return utils.FailedToUpsertDisability
 		}
 	}
 
 	err = n.personRepo.UpdatePerson(person, personId)
 	if err != nil {
-		return errors.New("failed to update person")
+		return utils.FailedToUpdatePerson
 	}
 
-	return nil
+	return utils.Error{}
 }
 
-func (n *personService) DeletePerson(personId int) error {
+func (n *personService) DeletePerson(personId int) utils.Error {
 	person, err := n.personRepo.GetPersonById(personId)
 	if err != nil {
-		return errors.New("failed to get person")
+		return utils.FailedToGetPerson
 	}
 
 	err = n.personRepo.DeletePerson(personId)
 	if err != nil {
-		return errors.New("failed to delete person")
+		return utils.FailedToDeletePerson
 	}
 
 	err = n.userRepo.DeleteUser(person.UserId)
 	if err != nil {
-		return errors.New("failed to delete user")
+		return utils.FailedToDeleteUser
 	}
 
 	err = n.addressRepo.DeleteAddress(*person.AddressId)
 	if err != nil {
-		return errors.New("failed to delete address")
+		return utils.FailedToDeleteAddress
 	}
 
-	return nil
+	return utils.Error{}
 }

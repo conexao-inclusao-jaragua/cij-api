@@ -128,7 +128,7 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusOK).JSON(response)
 	} else {
 		person, err := c.personService.GetPersonByUserId(user.Id)
-		if err != nil {
+		if err.Code != "" {
 			response = model.LoginResponse{
 				Message: err.Error(),
 			}

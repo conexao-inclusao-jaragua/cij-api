@@ -21,13 +21,11 @@ type Person struct {
 }
 
 type PersonRequest struct {
-	Name         string              `json:"name"`
-	Cpf          string              `json:"cpf"`
-	Phone        string              `json:"phone"`
-	Gender       enum.GenderEnum     `json:"gender"`
-	User         UserRequest         `json:"user"`
-	Address      AddressRequest      `json:"address"`
-	Disabilities []DisabilityRequest `json:"disabilities"`
+	Name   string          `json:"name"`
+	Cpf    string          `json:"cpf"`
+	Phone  string          `json:"phone"`
+	Gender enum.GenderEnum `json:"gender"`
+	User   UserRequest     `json:"user"`
 }
 
 type PersonResponse struct {
@@ -67,16 +65,4 @@ func (p *PersonRequest) ToUser() User {
 		Email:    p.User.Email,
 		Password: p.User.Password,
 	}
-}
-
-func (p *PersonRequest) ToAddress() Address {
-	return p.Address.ToModel()
-}
-
-func (p *PersonRequest) ToDisabilities() []Disability {
-	disabilities := make([]Disability, len(p.Disabilities))
-	for i, disability := range p.Disabilities {
-		disabilities[i] = disability.ToModel()
-	}
-	return disabilities
 }
