@@ -5,6 +5,11 @@ definitions:
       token:
         type: string
     type: object
+  controller.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
   enum.GenderEnum:
     enum:
     - male
@@ -86,13 +91,6 @@ definitions:
       password:
         type: string
     type: object
-  model.DisabilityRequest:
-    properties:
-      category:
-        type: string
-      description:
-        type: string
-    type: object
   model.DisabilityResponse:
     properties:
       category:
@@ -125,14 +123,8 @@ definitions:
     type: object
   model.PersonRequest:
     properties:
-      address:
-        $ref: '#/definitions/model.AddressRequest'
       cpf:
         type: string
-      disabilities:
-        items:
-          $ref: '#/definitions/model.DisabilityRequest'
-        type: array
       gender:
         $ref: '#/definitions/enum.GenderEnum'
       name:
@@ -176,6 +168,17 @@ definitions:
         type: string
       id:
         type: integer
+    type: object
+  utils.Error:
+    properties:
+      code:
+        type: string
+      fields:
+        items:
+          type: string
+        type: array
+      message:
+        type: string
     type: object
 host: localhost:3040
 info:
@@ -419,13 +422,13 @@ paths:
               $ref: '#/definitions/model.PersonResponse'
             type: array
         "404":
-          description: not found
+          description: Not Found
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
         "500":
-          description: internal server error
+          description: Internal Server Error
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
       summary: List all registered people.
       tags:
       - People
@@ -444,17 +447,17 @@ paths:
       - application/json
       responses:
         "200":
-          description: success
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
         "400":
-          description: bad request
+          description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/utils.Error'
         "500":
-          description: internal server error
+          description: Internal Server Error
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
       summary: Create a new person.
       tags:
       - People
@@ -473,17 +476,17 @@ paths:
       - application/json
       responses:
         "200":
-          description: success
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
         "400":
-          description: bad request
+          description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/utils.Error'
         "500":
-          description: internal server error
+          description: Internal Server Error
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
       summary: Delete a person.
       tags:
       - People
@@ -507,17 +510,17 @@ paths:
       - application/json
       responses:
         "200":
-          description: success
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
         "400":
-          description: bad request
+          description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/utils.Error'
         "500":
-          description: internal server error
+          description: Internal Server Error
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
       summary: Update a person.
       tags:
       - People
@@ -542,17 +545,17 @@ paths:
       - application/json
       responses:
         "200":
-          description: success
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
         "400":
-          description: bad request
+          description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/utils.Error'
         "500":
-          description: internal server error
+          description: Internal Server Error
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
       summary: Update a person address.
       tags:
       - People
@@ -579,17 +582,17 @@ paths:
       - application/json
       responses:
         "200":
-          description: success
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
         "400":
-          description: bad request
+          description: Bad Request
           schema:
-            type: string
+            $ref: '#/definitions/utils.Error'
         "500":
-          description: internal server error
+          description: Internal Server Error
           schema:
-            type: string
+            $ref: '#/definitions/controller.MessageResponse'
       summary: Update a person disabilities.
       tags:
       - People
