@@ -5,6 +5,7 @@ go 1.21.0
 require (
 	github.com/gofiber/contrib/swagger v1.1.0
 	github.com/spf13/viper v1.16.0
+	github.com/swaggo/swag v1.16.2
 	gorm.io/gorm v1.25.4
 )
 
@@ -39,7 +40,6 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/swaggo/files v0.0.0-20210815190702-a29dd2bc99b2 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
-	github.com/swaggo/swag v1.16.2 // indirect
 	github.com/urfave/cli/v2 v2.25.7 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
