@@ -12,16 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-const PRD_ENV = "prd"
-
-var env string
-
 // @title GO Clean API
 // @version 1.0
 // @description This the API for the CIJ project
 // @contact.name API Support
 // @contact.email cauakathdev@gmail.com
-// @host localhost:3040
+// @host conexao-inclusao.com
 // @BasePath /
 func main() {
 	loadConfig, err := config.LoadConfig(".")
@@ -72,18 +68,6 @@ func startServer(db *gorm.DB) {
 	}))
 
 	routes := router.NewRouter(app, db)
-
-	if env == PRD_ENV {
-		certPath := "../certs/server.pem"
-		keyPath := "../certs/server.key"
-
-		err := routes.ListenTLS(":3040", certPath, keyPath)
-		if err != nil {
-			panic(err)
-		}
-
-		return
-	}
 
 	err := routes.Listen(":3040")
 	if err != nil {
