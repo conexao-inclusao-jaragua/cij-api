@@ -38,7 +38,7 @@ http://localhost:3040/swagger/index.html
 
 Production
 ```
-https://ec2-18-228-222-57.sa-east-1.compute.amazonaws.com:3040/swagger/index.html
+https://conexao-inclusao.com/swagger/index.html
 ```
 
 ## ✍ Autores
