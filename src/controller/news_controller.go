@@ -48,3 +48,27 @@ func (n *NewsController) ListNews(ctx *fiber.Ctx) error {
 
 	return ctx.Status(http.StatusOK).JSON(response)
 }
+
+func (n *NewsController) CreateNews(ctx *fiber.Ctx) error {
+	var request model.NewsRequest
+	var response model.Response
+
+	if err := ctx.BodyParser(&request); err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(model.Response{
+			Message: err.Error(),
+		})
+	}
+
+	err := n.newsService.CreateNews(request)
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(model.Response{
+			Message: err.Error(),
+		})
+	}
+
+	response = model.Response{
+		Message: "success",
+	}
+
+	return ctx.Status(http.StatusCreated).JSON(response)
+}

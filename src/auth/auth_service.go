@@ -42,7 +42,7 @@ func (s *AuthService) GenerateToken(user model.User) (string, utils.Error) {
 	}
 
 	claims := &jwt.MapClaims{
-		"exp":   jwt.TimeFunc().Add(time.Minute * 10).Unix(),
+		"exp":   jwt.TimeFunc().Add(time.Hour * 24).Unix(),
 		"role":  user.Role.Name,
 		"email": user.Email,
 	}

@@ -9,6 +9,7 @@ import (
 
 type NewsRepo interface {
 	ListNews() ([]model.News, utils.Error)
+	CreateNews(news model.News) utils.Error
 }
 
 type newsRepo struct {
@@ -36,4 +37,13 @@ func (r *newsRepo) ListNews() ([]model.News, utils.Error) {
 	}
 
 	return news, utils.Error{}
+}
+
+func (r *newsRepo) CreateNews(news model.News) utils.Error {
+	err := r.db.Model(model.News{}).Create(&news).Error
+	if err != nil {
+		return newsRepoError("failed to create the news", "02")
+	}
+
+	return utils.Error{}
 }
