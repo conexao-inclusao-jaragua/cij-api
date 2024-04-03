@@ -20,8 +20,10 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	addressRepo := repo.NewAddressRepo(db)
 	addressService := service.NewAddressService(addressRepo)
 
+	personDisabilityRepo := repo.NewPersonDisabilityRepo(db)
+
 	personRepo := repo.NewPersonRepo(db)
-	personService := service.NewPersonService(personRepo, userRepo, addressRepo)
+	personService := service.NewPersonService(personRepo, userRepo, addressRepo, personDisabilityRepo)
 	personController := controller.NewPersonController(personService)
 
 	companyRepo := repo.NewCompanyRepo(db)
