@@ -176,6 +176,18 @@ definitions:
       user:
         $ref: '#/definitions/model.UserResponse'
     type: object
+  model.Response:
+    properties:
+      code:
+        type: string
+      data: {}
+      fields:
+        items:
+          type: string
+        type: array
+      message:
+        type: string
+    type: object
   model.UserRequest:
     properties:
       email:
@@ -206,8 +218,8 @@ info:
   contact:
     email: cauakathdev@gmail.com
     name: API Support
-  description: This the API for the CIJ project
-  title: GO Clean API
+  description: This is the API for the CIJ project
+  title: CIJ Project API
   version: "1.0"
 paths:
   /companies:
@@ -426,6 +438,51 @@ paths:
           schema:
             type: string
       summary: List all registered news.
+      tags:
+      - News
+    post:
+      consumes:
+      - application/json
+      description: create a new news.
+      parameters:
+      - in: formData
+        name: author
+        type: string
+      - in: formData
+        name: date
+        type: string
+      - in: formData
+        name: description
+        type: string
+      - in: formData
+        name: title
+        type: string
+      - description: banner
+        in: formData
+        name: banner
+        required: true
+        type: file
+      - description: author_image
+        in: formData
+        name: authorImage
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Response'
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: internal server error
+          schema:
+            type: string
+      summary: Create a new news.
       tags:
       - News
   /people:

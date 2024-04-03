@@ -12,12 +12,12 @@ import (
 	"gorm.io/gorm"
 )
 
-// @title GO Clean API
+// @title CIJ Project API
 // @version 1.0
-// @description This the API for the CIJ project
+// @description This is the API for the CIJ project
 // @contact.name API Support
 // @contact.email cauakathdev@gmail.com
-// @host conexao-inclusao.com
+// @host localhost:3040
 // @BasePath /
 func main() {
 	loadConfig, err := config.LoadConfig(".")

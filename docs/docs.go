@@ -347,6 +347,75 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "create a new news.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "News"
+                ],
+                "summary": "Create a new news.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "author",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "date",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "name": "title",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "banner",
+                        "name": "banner",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "author_image",
+                        "name": "authorImage",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
             }
         },
         "/people": {
@@ -905,6 +974,24 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Response": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "data": {},
+                "fields": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserRequest": {
             "type": "object",
             "properties": {
@@ -953,8 +1040,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "conexao-inclusao.com",
 	BasePath:         "/",
 	Schemes:          []string{},
-	Title:            "GO Clean API",
-	Description:      "This the API for the CIJ project",
+	Title:            "CIJ Project API",
+	Description:      "This is the API for the CIJ project",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

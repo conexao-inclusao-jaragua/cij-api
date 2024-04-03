@@ -3,6 +3,7 @@ package controller
 import (
 	"cij_api/src/model"
 	"cij_api/src/service"
+	"mime/multipart"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -49,17 +50,43 @@ func (n *NewsController) ListNews(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response)
 }
 
+// CreateNews
+// @Summary Create a new news.
+// @Description create a new news.
+// @Tags News
+// @Accept json
+// @Produce json
+// @Param news formData model.NewsRequest true "news"
+// @Param banner formData file true "banner"
+// @Param authorImage formData file true "author_image"
+// @Success 201 {object} model.Response
+// @Failure 400 {object} string "bad request"
+// @Failure 500 {object} string "internal server error"
+// @Router /news [post]
 func (n *NewsController) CreateNews(ctx *fiber.Ctx) error {
-	var request model.NewsRequest
 	var response model.Response
 
-	if err := ctx.BodyParser(&request); err != nil {
+	form, err := ctx.MultipartForm()
+	if err != nil {
 		return ctx.Status(http.StatusBadRequest).JSON(model.Response{
 			Message: err.Error(),
 		})
 	}
 
-	err := n.newsService.CreateNews(request)
+	request := model.NewsRequest{
+		Title:       form.Value["title"][0],
+		Description: form.Value["description"][0],
+		Author:      form.Value["author"][0],
+		Date:        form.Value["date"][0],
+	}
+
+	files := make(map[string]multipart.FileHeader)
+
+	for _, file := range form.File {
+		files[file[0].Filename] = *file[0]
+	}
+
+	err = n.newsService.CreateNews(request, files)
 	if err != nil {
 		return ctx.Status(http.StatusInternalServerError).JSON(model.Response{
 			Message: err.Error(),
