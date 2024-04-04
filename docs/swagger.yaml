@@ -180,7 +180,7 @@ definitions:
       message:
         type: string
     type: object
-host: localhost:3040
+host: conexao-inclusao.com
 info:
   contact:
     email: cauakathdev@gmail.com
