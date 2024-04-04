@@ -17,28 +17,26 @@ type Person struct {
 	AddressId    *int            `gorm:"type:int;unique" json:"address_id"`
 	Address      *Address
 	User         *User
-	Disabilities []PersonDisability
+	Disabilities []Disability `gorm:"many2many:person_disabilities;"`
 }
 
 type PersonRequest struct {
-	Name         string              `json:"name"`
-	Cpf          string              `json:"cpf"`
-	Phone        string              `json:"phone"`
-	Gender       enum.GenderEnum     `json:"gender"`
-	User         UserRequest         `json:"user"`
-	Address      AddressRequest      `json:"address"`
-	Disabilities []DisabilityRequest `json:"disabilities"`
+	Name   string          `json:"name"`
+	Cpf    string          `json:"cpf"`
+	Phone  string          `json:"phone"`
+	Gender enum.GenderEnum `json:"gender"`
+	User   UserRequest     `json:"user"`
 }
 
 type PersonResponse struct {
-	Id           int                         `json:"id"`
-	Name         string                      `json:"name"`
-	Cpf          string                      `json:"cpf"`
-	Phone        string                      `json:"phone"`
-	Gender       enum.GenderEnum             `json:"gender"`
-	User         UserResponse                `json:"user"`
-	Address      *AddressResponse            `json:"address,omitempty"`
-	Disabilities *[]PersonDisabilityResponse `json:"disabilities,omitempty"`
+	Id           int                   `json:"id"`
+	Name         string                `json:"name"`
+	Cpf          string                `json:"cpf"`
+	Phone        string                `json:"phone"`
+	Gender       enum.GenderEnum       `json:"gender"`
+	User         UserResponse          `json:"user"`
+	Address      *AddressResponse      `json:"address,omitempty"`
+	Disabilities *[]DisabilityResponse `json:"disabilities,omitempty"`
 }
 
 func (p *Person) ToResponse(user User) PersonResponse {

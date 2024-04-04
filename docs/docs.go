@@ -601,7 +601,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.DisabilityRequest"
+                                "type": "integer"
                             }
                         }
                     },
@@ -675,9 +675,6 @@ const docTemplate = `{
                 "complement": {
                     "type": "string"
                 },
-                "country": {
-                    "type": "string"
-                },
                 "neighborhood": {
                     "type": "string"
                 },
@@ -702,9 +699,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "complement": {
-                    "type": "string"
-                },
-                "country": {
                     "type": "string"
                 },
                 "id": {
@@ -781,11 +775,14 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DisabilityRequest": {
+        "model.DisabilityResponse": {
             "type": "object",
             "properties": {
-                "acquired": {
-                    "type": "boolean"
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"
@@ -824,40 +821,11 @@ const docTemplate = `{
                 }
             }
         },
-        "model.PersonDisabilityResponse": {
-            "type": "object",
-            "properties": {
-                "acquired": {
-                    "type": "boolean"
-                },
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "rate": {
-                    "type": "string"
-                }
-            }
-        },
         "model.PersonRequest": {
             "type": "object",
             "properties": {
-                "address": {
-                    "$ref": "#/definitions/model.AddressRequest"
-                },
                 "cpf": {
                     "type": "string"
-                },
-                "disabilities": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.DisabilityRequest"
-                    }
                 },
                 "gender": {
                     "$ref": "#/definitions/enum.GenderEnum"
@@ -885,7 +853,7 @@ const docTemplate = `{
                 "disabilities": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.PersonDisabilityResponse"
+                        "$ref": "#/definitions/model.DisabilityResponse"
                     }
                 },
                 "gender": {
@@ -950,7 +918,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "conexao-inclusao.com",
+	Host:             "localhost:3040",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "GO Clean API",

@@ -121,26 +121,8 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 			return ctx.Status(http.StatusInternalServerError).JSON(response)
 		}
 
-		companyResponse := company.ToResponse(user)
-
-		if company.AddressId != nil {
-			address, err := c.addressService.GetAddressById(*company.AddressId)
-			if err != nil {
-				response = model.LoginResponse{
-					Message: err.Error(),
-				}
-
-				return ctx.Status(http.StatusInternalServerError).JSON(response)
-			}
-
-			if address.Id != 0 {
-				addressResponse := address.ToResponse()
-				companyResponse.Address = addressResponse
-			}
-		}
-
 		response = model.LoginResponse{
-			UserInfo: companyResponse,
+			UserInfo: company.ToResponse(user),
 		}
 
 		return ctx.Status(http.StatusOK).JSON(response)
@@ -167,7 +149,8 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 			}
 
 			if address.Id != 0 {
-				addressResponse := address.ToResponse()
+				var addressResponse model.AddressResponse
+				addressResponse = address.ToResponse()
 				personResponse.Address = &addressResponse
 			}
 		}

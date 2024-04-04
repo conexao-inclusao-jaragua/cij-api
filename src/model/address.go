@@ -15,7 +15,6 @@ type Address struct {
 	Neighborhood string    `gorm:"type:varchar(200);not null" json:"neighborhood"`
 	City         string    `gorm:"type:varchar(200);not null" json:"city"`
 	State        string    `gorm:"type:char(2);not null" json:"state"`
-	Country      string    `gorm:"type:varchar(200);not null" json:"country"`
 	ZipCode      string    `gorm:"type:char(8);not null" json:"zip_code"`
 	Complement   string    `gorm:"type:varchar(200);" json:"complement"`
 }
@@ -26,7 +25,6 @@ type AddressRequest struct {
 	Neighborhood string `json:"neighborhood"`
 	City         string `json:"city"`
 	State        string `json:"state"`
-	Country      string `json:"country"`
 	ZipCode      string `json:"zip_code"`
 	Complement   string `json:"complement"`
 }
@@ -38,7 +36,6 @@ type AddressResponse struct {
 	Neighborhood string `json:"neighborhood"`
 	City         string `json:"city"`
 	State        string `json:"state"`
-	Country      string `json:"country"`
 	ZipCode      string `json:"zip_code"`
 	Complement   string `json:"complement"`
 }
@@ -51,7 +48,6 @@ func (a *Address) ToResponse() AddressResponse {
 		Neighborhood: a.Neighborhood,
 		City:         a.City,
 		State:        a.State,
-		Country:      a.Country,
 		ZipCode:      a.ZipCode,
 		Complement:   a.Complement,
 	}
@@ -64,7 +60,6 @@ func (a *AddressRequest) ToModel() Address {
 		Neighborhood: a.Neighborhood,
 		City:         a.City,
 		State:        a.State,
-		Country:      a.Country,
 		ZipCode:      a.ZipCode,
 		Complement:   a.Complement,
 	}
