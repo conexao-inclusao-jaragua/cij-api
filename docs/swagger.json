@@ -9,7 +9,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:3040",
+    "host": "conexao-inclusao.com",
     "basePath": "/",
     "paths": {
         "/companies": {
