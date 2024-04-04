@@ -43,7 +43,8 @@ func (s *companyService) ListCompanies() ([]model.CompanyResponse, error) {
 		}
 
 		if address.Id != 0 {
-			addressResponse := address.ToResponse()
+			var addressResponse model.AddressResponse
+			addressResponse = address.ToResponse()
 			companyResponse.Address = addressResponse
 		}
 

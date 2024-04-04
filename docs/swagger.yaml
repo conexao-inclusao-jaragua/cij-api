@@ -26,8 +26,6 @@ definitions:
         type: string
       complement:
         type: string
-      country:
-        type: string
       neighborhood:
         type: string
       number:
@@ -44,8 +42,6 @@ definitions:
       city:
         type: string
       complement:
-        type: string
-      country:
         type: string
       id:
         type: integer
@@ -95,10 +91,12 @@ definitions:
       password:
         type: string
     type: object
-  model.DisabilityRequest:
+  model.DisabilityResponse:
     properties:
-      acquired:
-        type: boolean
+      category:
+        type: string
+      description:
+        type: string
       id:
         type: integer
     type: object
@@ -123,29 +121,10 @@ definitions:
       title:
         type: string
     type: object
-  model.PersonDisabilityResponse:
-    properties:
-      acquired:
-        type: boolean
-      category:
-        type: string
-      description:
-        type: string
-      id:
-        type: integer
-      rate:
-        type: string
-    type: object
   model.PersonRequest:
     properties:
-      address:
-        $ref: '#/definitions/model.AddressRequest'
       cpf:
         type: string
-      disabilities:
-        items:
-          $ref: '#/definitions/model.DisabilityRequest'
-        type: array
       gender:
         $ref: '#/definitions/enum.GenderEnum'
       name:
@@ -163,7 +142,7 @@ definitions:
         type: string
       disabilities:
         items:
-          $ref: '#/definitions/model.PersonDisabilityResponse'
+          $ref: '#/definitions/model.DisabilityResponse'
         type: array
       gender:
         $ref: '#/definitions/enum.GenderEnum'
@@ -201,7 +180,7 @@ definitions:
       message:
         type: string
     type: object
-host: conexao-inclusao.com
+host: localhost:3040
 info:
   contact:
     email: cauakathdev@gmail.com
@@ -592,7 +571,7 @@ paths:
         required: true
         schema:
           items:
-            $ref: '#/definitions/model.DisabilityRequest'
+            type: integer
           type: array
       - description: Person ID
         in: path
