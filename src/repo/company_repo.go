@@ -68,7 +68,7 @@ func (n *companyRepo) UpdateCompany(company model.Company, companyId int) error 
 }
 
 func (n *companyRepo) DeleteCompany(companyId int) error {
-	if err := n.db.Model(model.Company{}).Where("id = ?", companyId).Unscoped().Delete(&model.Company{}).Error; err != nil {
+	if err := n.db.Model(model.Company{}).Where("id = ?", companyId).Delete(&model.Company{}).Error; err != nil {
 		return errors.New("failed to delete the company")
 	}
 

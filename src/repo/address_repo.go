@@ -38,7 +38,7 @@ func (n *addressRepo) UpsertAddress(address model.Address) (int, error) {
 }
 
 func (n *addressRepo) DeleteAddress(id int) error {
-	if err := n.db.Model(model.Address{}).Where("id = ?", id).Unscoped().Delete(&model.Address{}).Error; err != nil {
+	if err := n.db.Model(model.Address{}).Where("id = ?", id).Delete(&model.Address{}).Error; err != nil {
 		return errors.New("failed to delete address")
 	}
 

@@ -65,24 +65,6 @@ func (n *PersonController) CreatePerson(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	if err := validateAddress(personRequest.Address); err.Code != "" {
-		response = model.Response{
-			Message: err.Error(),
-			Code:    err.GetCode(),
-		}
-
-		return ctx.Status(http.StatusBadRequest).JSON(response)
-	}
-
-	if err := n.validatePersonDisabilities(personRequest.Disabilities); err.Code != "" {
-		response = model.Response{
-			Message: err.Error(),
-			Code:    err.GetCode(),
-		}
-
-		return ctx.Status(http.StatusBadRequest).JSON(response)
-	}
-
 	if err := n.personService.CreatePerson(personRequest); err.Code != "" {
 		response = model.Response{
 			Message: err.Error(),
@@ -298,14 +280,14 @@ func (n *PersonController) UpdatePersonAddress(ctx *fiber.Ctx) error {
 // @Tags People
 // @Accept */*
 // @Produce json
-// @Param disabilities body []model.DisabilityRequest true "Disabilities"
+// @Param disabilities body []int true "Disabilities"
 // @Param id path string true "Person ID"
 // @Success 200 {object} MessageResponse
 // @Failure 400 {object} utils.Error
 // @Failure 500 {object} MessageResponse
 // @Router /people/:id/disabilities [put]
 func (n *PersonController) UpdatePersonDisabilities(ctx *fiber.Ctx) error {
-	var disabilities []model.DisabilityRequest
+	var disabilities []int
 	var response model.Response
 
 	if err := ctx.BodyParser(&disabilities); err != nil {
@@ -473,7 +455,7 @@ func (c *PersonController) validatePerson(personRequest model.PersonRequest) uti
 		return utils.NewError("phone must have 13 digits", "ERR-0009")
 	}
 
-	if !personRequest.Gender.IsValid() {
+	if personRequest.Gender.IsValid() == false {
 		return utils.NewError("gender is not valid", "ERR-0010")
 	}
 
@@ -525,9 +507,9 @@ func validateAddress(addressRequest model.AddressRequest) utils.Error {
 	return utils.Error{}
 }
 
-func (n *PersonController) validatePersonDisabilities(disabiliesRequest []model.DisabilityRequest) utils.Error {
-	for _, disability := range disabiliesRequest {
-		disability, err := n.personService.GetDisabilityById(disability.Id)
+func (n *PersonController) validatePersonDisabilities(disabiliesRequest []int) utils.Error {
+	for _, disabilityId := range disabiliesRequest {
+		disability, err := n.personService.GetDisabilityById(disabilityId)
 		if err.Code != "" {
 			return utils.NewError("failed to get disability", "ERR-0021")
 		}
