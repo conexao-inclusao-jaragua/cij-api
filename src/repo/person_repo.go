@@ -18,12 +18,12 @@ func NewPersonRepo(db *gorm.DB) domain.PersonRepo {
 	}
 }
 
-func (n *personRepo) CreatePerson(createPerson model.Person) error {
+func (n *personRepo) CreatePerson(createPerson model.Person) (int, error) {
 	if err := n.db.Create(&createPerson).Error; err != nil {
-		return errors.New("failed to create person")
+		return 0, errors.New("failed to create person")
 	}
 
-	return nil
+	return createPerson.Id, nil
 }
 
 func (n *personRepo) ListPeople() ([]model.Person, error) {
@@ -70,31 +70,6 @@ func (n *personRepo) GetPersonByCpf(cpf string) (model.Person, error) {
 	return person, nil
 }
 
-func (n *personRepo) GetPersonDisabilities(personId int) ([]model.Disability, error) {
-	var disabilities []model.Disability
-	var person model.Person
-
-	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Find(&person).Error; err != nil {
-		return disabilities, errors.New("failed to get the person")
-	}
-
-	if err := n.db.Model(&person).Association("Disabilities").Find(&disabilities); err != nil {
-		return disabilities, errors.New("failed to get the person disabilities")
-	}
-
-	return disabilities, nil
-}
-
-func (n *personRepo) GetDisabilityById(disabilityId int) (model.Disability, error) {
-	var disability model.Disability
-
-	if err := n.db.Model(model.Disability{}).Where("id = ?", disabilityId).Find(&disability).Error; err != nil {
-		return disability, errors.New("failed to get the disability")
-	}
-
-	return disability, nil
-}
-
 func (n *personRepo) UpdatePerson(person model.Person, personId int) error {
 	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Updates(person).Error; err != nil {
 		return errors.New("failed to update the person")
@@ -103,36 +78,8 @@ func (n *personRepo) UpdatePerson(person model.Person, personId int) error {
 	return nil
 }
 
-func (n *personRepo) UpsertPersonDisability(disability model.Disability, personId int) error {
-	var person model.Person
-
-	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Find(&person).Error; err != nil {
-		return errors.New("failed to get the person")
-	}
-
-	if err := n.db.Model(&person).Association("Disabilities").Append(&disability); err != nil {
-		return errors.New("failed to upsert the person disability")
-	}
-
-	return nil
-}
-
-func (n *personRepo) ClearPersonDisability(personId int) error {
-	var person model.Person
-
-	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Find(&person).Error; err != nil {
-		return errors.New("failed to get the person")
-	}
-
-	if err := n.db.Model(&person).Association("Disabilities").Clear(); err != nil {
-		return errors.New("failed to clear the person disability")
-	}
-
-	return nil
-}
-
 func (n *personRepo) DeletePerson(personId int) error {
-	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Delete(&model.Person{}).Error; err != nil {
+	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Unscoped().Delete(&model.Person{}).Error; err != nil {
 		return errors.New("failed to delete the person")
 	}
 
