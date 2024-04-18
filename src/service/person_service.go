@@ -2,6 +2,7 @@ package service
 
 import (
 	"cij_api/src/model"
+	"cij_api/src/repo"
 	"cij_api/src/utils"
 )
 
@@ -15,23 +16,23 @@ type PersonService interface {
 	GetDisabilityById(disabilityId int) (model.Disability, utils.Error)
 	UpdatePerson(person model.PersonRequest, personId int) utils.Error
 	UpdatePersonAddress(address model.AddressRequest, personId int) utils.Error
-	UpdatePersonDisabilities(disabilities []int, personId int) utils.Error
+	UpdatePersonDisabilities(disabilities []model.DisabilityRequest, personId int) utils.Error
 	DeletePerson(personId int) utils.Error
 }
 
 type personService struct {
-	personRepo           domain.PersonRepo
-	userRepo             domain.UserRepo
-	addressRepo          domain.AddressRepo
-	personDisabilityRepo domain.PersonDisabilityRepo
+	personRepo           repo.PersonRepo
+	userRepo             repo.UserRepo
+	addressRepo          repo.AddressRepo
+	personDisabilityRepo repo.PersonDisabilityRepo
 }
 
 func NewPersonService(
-	personRepo domain.PersonRepo,
-	userRepo domain.UserRepo,
-	addressRepo domain.AddressRepo,
-	personDisabilityRepo domain.PersonDisabilityRepo,
-) domain.PersonService {
+	personRepo repo.PersonRepo,
+	userRepo repo.UserRepo,
+	addressRepo repo.AddressRepo,
+	personDisabilityRepo repo.PersonDisabilityRepo,
+) PersonService {
 	return &personService{
 		personRepo:           personRepo,
 		userRepo:             userRepo,

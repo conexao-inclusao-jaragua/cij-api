@@ -8,16 +8,12 @@ import (
 )
 
 type PersonRepo interface {
-	CreatePerson(createPerson model.Person) error
+	CreatePerson(createPerson model.Person) (int, error)
 	ListPeople() ([]model.Person, error)
 	GetPersonById(personId int) (model.Person, error)
 	GetPersonByUserId(userId int) (model.Person, error)
 	GetPersonByCpf(cpf string) (model.Person, error)
-	GetPersonDisabilities(personId int) ([]model.Disability, error)
-	GetDisabilityById(disabilityId int) (model.Disability, error)
 	UpdatePerson(person model.Person, personId int) error
-	UpsertPersonDisability(disability model.Disability, personId int) error
-	ClearPersonDisability(personId int) error
 	DeletePerson(personId int) error
 }
 
