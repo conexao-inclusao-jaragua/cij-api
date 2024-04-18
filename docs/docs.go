@@ -601,7 +601,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "integer"
+                                "$ref": "#/definitions/model.DisabilityRequest"
                             }
                         }
                     },
@@ -675,6 +675,9 @@ const docTemplate = `{
                 "complement": {
                     "type": "string"
                 },
+                "country": {
+                    "type": "string"
+                },
                 "neighborhood": {
                     "type": "string"
                 },
@@ -699,6 +702,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "complement": {
+                    "type": "string"
+                },
+                "country": {
                     "type": "string"
                 },
                 "id": {
@@ -775,14 +781,11 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DisabilityResponse": {
+        "model.DisabilityRequest": {
             "type": "object",
             "properties": {
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
+                "acquired": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"
@@ -821,11 +824,40 @@ const docTemplate = `{
                 }
             }
         },
+        "model.PersonDisabilityResponse": {
+            "type": "object",
+            "properties": {
+                "acquired": {
+                    "type": "boolean"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "rate": {
+                    "type": "string"
+                }
+            }
+        },
         "model.PersonRequest": {
             "type": "object",
             "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressRequest"
+                },
                 "cpf": {
                     "type": "string"
+                },
+                "disabilities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DisabilityRequest"
+                    }
                 },
                 "gender": {
                     "$ref": "#/definitions/enum.GenderEnum"
@@ -853,7 +885,7 @@ const docTemplate = `{
                 "disabilities": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.DisabilityResponse"
+                        "$ref": "#/definitions/model.PersonDisabilityResponse"
                     }
                 },
                 "gender": {

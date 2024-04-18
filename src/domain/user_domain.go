@@ -9,5 +9,4 @@ type UserRepo interface {
 	GetUserById(id int) (model.User, error)
 	UpdateUser(user model.User, userId int) error
 	DeleteUser(id int) error
-	DeleteUserPermanent(id int) error
 }
