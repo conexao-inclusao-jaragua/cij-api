@@ -1,18 +1,26 @@
 package repo
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
 	"errors"
 
 	"gorm.io/gorm"
 )
 
+type CompanyRepo interface {
+	CreateCompany(createCompany model.Company) error
+	ListCompanies() ([]model.Company, error)
+	GetCompanyById(companyId int) (model.Company, error)
+	GetCompanyByUserId(userId int) (model.Company, error)
+	UpdateCompany(company model.Company, companyId int) error
+	DeleteCompany(companyId int) error
+}
+
 type companyRepo struct {
 	db *gorm.DB
 }
 
-func NewCompanyRepo(db *gorm.DB) domain.CompanyRepo {
+func NewCompanyRepo(db *gorm.DB) CompanyRepo {
 	return &companyRepo{
 		db: db,
 	}

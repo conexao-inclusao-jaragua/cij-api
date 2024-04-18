@@ -1,19 +1,32 @@
 package service
 
 import (
-	"cij_api/src/auth"
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/repo"
 	"cij_api/src/utils"
 )
 
-type personService struct {
-	personRepo  domain.PersonRepo
-	userRepo    domain.UserRepo
-	addressRepo domain.AddressRepo
+type PersonService interface {
+	CreatePerson(createPerson model.PersonRequest) utils.Error
+	ListPeople() ([]model.PersonResponse, utils.Error)
+	GetPersonByUserId(userId int) (model.Person, utils.Error)
+	GetPersonById(personId int) (model.Person, utils.Error)
+	GetPersonByCpf(cpf string) (model.Person, utils.Error)
+	GetUserByEmail(email string) (model.User, utils.Error)
+	GetDisabilityById(disabilityId int) (model.Disability, utils.Error)
+	UpdatePerson(person model.PersonRequest, personId int) utils.Error
+	UpdatePersonAddress(address model.AddressRequest, personId int) utils.Error
+	UpdatePersonDisabilities(disabilities []int, personId int) utils.Error
+	DeletePerson(personId int) utils.Error
 }
 
-func NewPersonService(personRepo domain.PersonRepo, userRepo domain.UserRepo, addressRepo domain.AddressRepo) domain.PersonService {
+type personService struct {
+	personRepo  repo.PersonRepo
+	userRepo    repo.UserRepo
+	addressRepo repo.AddressRepo
+}
+
+func NewPersonService(personRepo repo.PersonRepo, userRepo repo.UserRepo, addressRepo repo.AddressRepo) PersonService {
 	return &personService{
 		personRepo:  personRepo,
 		userRepo:    userRepo,
@@ -44,8 +57,7 @@ func (s *personService) ListPeople() ([]model.PersonResponse, utils.Error) {
 			}
 
 			if address.Id != 0 {
-				var addressResponse model.AddressResponse
-				addressResponse = address.ToResponse()
+				addressResponse := address.ToResponse()
 				personResponse.Address = &addressResponse
 			}
 		}
@@ -75,7 +87,7 @@ func (s *personService) ListPeople() ([]model.PersonResponse, utils.Error) {
 func (n *personService) CreatePerson(createPerson model.PersonRequest) utils.Error {
 	userInfo := createPerson.ToUser()
 
-	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
+	hashedPassword, err := utils.EncryptPassword(userInfo.Password)
 	if err != nil {
 		return utils.FailedToEncryptPassword
 	}
@@ -143,7 +155,7 @@ func (n *personService) GetUserByEmail(email string) (model.User, utils.Error) {
 func (n *personService) UpdatePerson(updatePerson model.PersonRequest, personId int) utils.Error {
 	userInfo := updatePerson.ToUser()
 
-	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
+	hashedPassword, err := utils.EncryptPassword(userInfo.Password)
 	if err != nil {
 		return utils.FailedToEncryptPassword
 	}

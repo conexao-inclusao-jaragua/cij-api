@@ -1,16 +1,20 @@
 package service
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/repo"
 	"errors"
 )
 
-type newsService struct {
-	newsRepo domain.NewsRepo
+type NewsService interface {
+	ListNews() ([]model.NewsResponse, error)
 }
 
-func NewNewsService(newsRepo domain.NewsRepo) domain.NewsService {
+type newsService struct {
+	newsRepo repo.NewsRepo
+}
+
+func NewNewsService(newsRepo repo.NewsRepo) NewsService {
 	return &newsService{
 		newsRepo: newsRepo,
 	}

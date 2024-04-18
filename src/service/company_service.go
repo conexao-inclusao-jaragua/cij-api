@@ -1,19 +1,27 @@
 package service
 
 import (
-	"cij_api/src/auth"
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/repo"
+	"cij_api/src/utils"
 	"errors"
 )
 
-type companyService struct {
-	companyRepo domain.CompanyRepo
-	userRepo    domain.UserRepo
-	addressRepo domain.AddressRepo
+type CompanyService interface {
+	CreateCompany(createCompany model.CompanyRequest) error
+	ListCompanies() ([]model.CompanyResponse, error)
+	GetCompanyByUserId(userId int) (model.Company, error)
+	UpdateCompany(company model.CompanyRequest, companyId int) error
+	DeleteCompany(companyId int) error
 }
 
-func NewCompanyService(companyRepo domain.CompanyRepo, userRepo domain.UserRepo, addressRepo domain.AddressRepo) domain.CompanyService {
+type companyService struct {
+	companyRepo repo.CompanyRepo
+	userRepo    repo.UserRepo
+	addressRepo repo.AddressRepo
+}
+
+func NewCompanyService(companyRepo repo.CompanyRepo, userRepo repo.UserRepo, addressRepo repo.AddressRepo) CompanyService {
 	return &companyService{
 		companyRepo: companyRepo,
 		userRepo:    userRepo,
@@ -57,7 +65,7 @@ func (s *companyService) ListCompanies() ([]model.CompanyResponse, error) {
 func (n *companyService) CreateCompany(createCompany model.CompanyRequest) error {
 	userInfo := createCompany.ToUser()
 
-	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
+	hashedPassword, err := utils.EncryptPassword(userInfo.Password)
 	if err != nil {
 		return errors.New("error on encrypt company password")
 	}
@@ -106,7 +114,7 @@ func (n *companyService) GetCompanyByUserId(userId int) (model.Company, error) {
 func (n *companyService) UpdateCompany(updateCompany model.CompanyRequest, companyId int) error {
 	userInfo := updateCompany.ToUser()
 
-	hashedPassword, err := auth.EncryptPassword(userInfo.Password)
+	hashedPassword, err := utils.EncryptPassword(userInfo.Password)
 	if err != nil {
 		return errors.New("error on encrypt company password")
 	}

@@ -2,20 +2,19 @@ package auth
 
 import (
 	"cij_api/src/config"
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/repo"
 	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
-	userRepo domain.UserRepo
+	userRepo repo.UserRepo
 }
 
-func NewAuthService(userRepo domain.UserRepo) *AuthService {
+func NewAuthService(userRepo repo.UserRepo) *AuthService {
 	return &AuthService{
 		userRepo: userRepo,
 	}
@@ -61,22 +60,6 @@ func ValidateToken(tokenString string) (*jwt.Token, error) {
 	return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secret), nil
 	})
-}
-
-func EncryptPassword(password string) (string, error) {
-	passwordBytes := []byte(password)
-
-	hashedPassword, err := bcrypt.GenerateFromPassword(passwordBytes, bcrypt.DefaultCost)
-	if err != nil {
-		return "", errors.New("error on encrypt password")
-	}
-
-	err = bcrypt.CompareHashAndPassword(hashedPassword, passwordBytes)
-	if err != nil {
-		return "", errors.New("error on encrypt password")
-	}
-
-	return string(hashedPassword), nil
 }
 
 func (s *AuthService) Authenticate(credentials model.Credentials) (model.User, error) {
