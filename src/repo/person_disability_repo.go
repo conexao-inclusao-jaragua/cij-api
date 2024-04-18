@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
 
 	"gorm.io/gorm"
@@ -19,7 +18,7 @@ type personDisabilityRepo struct {
 	db *gorm.DB
 }
 
-func NewPersonDisabilityRepo(db *gorm.DB) domain.PersonDisabilityRepo {
+func NewPersonDisabilityRepo(db *gorm.DB) PersonDisabilityRepo {
 	return &personDisabilityRepo{
 		db: db,
 	}
