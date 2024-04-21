@@ -26,6 +26,8 @@ type NewsResponse struct {
 	Description string `json:"description"`
 	Author      string `json:"author"`
 	Date        string `json:"date"`
+	Banner      string `json:"banner"`
+	AuthorImage string `json:"author_image"`
 }
 
 func (n *News) ToResponse() NewsResponse {
@@ -35,6 +37,8 @@ func (n *News) ToResponse() NewsResponse {
 		Description: n.Description,
 		Author:      n.Author,
 		Date:        n.Date,
+		Banner:      n.Banner,
+		AuthorImage: n.AuthorImage,
 	}
 }
 
@@ -42,7 +46,7 @@ func (n *NewsRequest) ToModel() News {
 	return News{
 		Title:       n.Title,
 		Description: n.Description,
-		Author: 		 n.Author,
+		Author:      n.Author,
 		Date:        n.Date,
 	}
 }

@@ -1,8 +1,10 @@
 package service
 
 import (
+	"cij_api/src/config"
+	"cij_api/src/integration"
 	"context"
-	"io"
+	"mime/multipart"
 
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
@@ -12,19 +14,30 @@ type filesService struct {
 	cloudinaryIntegration *cloudinary.Cloudinary
 }
 
-func NewFilesService(cloudinaryIntegration *cloudinary.Cloudinary) *filesService {
+func NewFilesService() *filesService {
+	config, err := config.LoadCloudinaryConfig(".")
+	if err != nil {
+		panic("failed to load cloudinary config")
+	}
+
+	cloudinaryIntegration := integration.CloudinaryConnect(config.CloudinaryUrl)
+
 	return &filesService{
 		cloudinaryIntegration: cloudinaryIntegration,
 	}
 }
 
-func (f *filesService) UploadFile(file io.Reader) (string, error) {
+func (f *filesService) UploadFile(file multipart.File, filePath string) (string, error) {
+	ctx := context.Background()
+
 	uploadResult, err := f.cloudinaryIntegration.Upload.Upload(
-		context.TODO(),
+		ctx,
 		file,
-		uploader.UploadParams{},
+		uploader.UploadParams{
+			PublicID: filePath,
+		},
 	)
-	
+
 	if err != nil {
 		return "", err
 	}

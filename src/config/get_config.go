@@ -3,8 +3,8 @@ package config
 import "github.com/spf13/viper"
 
 type Config struct {
-	DbConnection  string `mapstructure:"DSN"`
-	SecretKey     string `mapstructure:"SECRET_KEY"`
+	DbConnection string `mapstructure:"DSN"`
+	SecretKey    string `mapstructure:"SECRET_KEY"`
 }
 
 type CloudinaryConfig struct {
@@ -29,7 +29,7 @@ func LoadConfig(path string) (config Config, err error) {
 func LoadCloudinaryConfig(path string) (config CloudinaryConfig, err error) {
 	viper.AddConfigPath(path)
 	viper.SetConfigType("env")
-	viper.SetConfigName("cloudinary")
+	viper.SetConfigName("app")
 
 	viper.AutomaticEnv()
 

@@ -82,8 +82,8 @@ func (n *NewsController) CreateNews(ctx *fiber.Ctx) error {
 
 	files := make(map[string]multipart.FileHeader)
 
-	for _, file := range form.File {
-		files[file[0].Filename] = *file[0]
+	for filename, file := range form.File {
+		files[filename] = *file[0]
 	}
 
 	err = n.newsService.CreateNews(request, files)
