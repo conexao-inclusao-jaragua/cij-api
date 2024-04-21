@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/service"
 	"cij_api/src/utils"
 	"net/http"
 	"strconv"
@@ -15,10 +15,10 @@ type MessageResponse struct {
 }
 
 type PersonController struct {
-	personService domain.PersonService
+	personService service.PersonService
 }
 
-func NewPersonController(personService domain.PersonService) *PersonController {
+func NewPersonController(personService service.PersonService) *PersonController {
 	return &PersonController{
 		personService: personService,
 	}

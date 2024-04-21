@@ -1,18 +1,23 @@
 package repo
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
 	"errors"
 
 	"gorm.io/gorm"
 )
 
+type AddressRepo interface {
+	GetAddressById(id int) (model.Address, error)
+	UpsertAddress(address model.Address) (int, error)
+	DeleteAddress(id int) error
+}
+
 type addressRepo struct {
 	db *gorm.DB
 }
 
-func NewAddressRepo(db *gorm.DB) domain.AddressRepo {
+func NewAddressRepo(db *gorm.DB) AddressRepo {
 	return &addressRepo{
 		db: db,
 	}

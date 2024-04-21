@@ -1,18 +1,24 @@
 package repo
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
+type PersonDisabilityRepo interface {
+	GetPersonDisabilities(personId int) ([]model.PersonDisability, error)
+	GetDisabilityById(disabilityId int) (model.Disability, error)
+	UpsertPersonDisability(personDisability model.PersonDisability) error
+	ClearPersonDisability(personId int) error
+}
+
 type personDisabilityRepo struct {
 	db *gorm.DB
 }
 
-func NewPersonDisabilityRepo(db *gorm.DB) domain.PersonDisabilityRepo {
+func NewPersonDisabilityRepo(db *gorm.DB) PersonDisabilityRepo {
 	return &personDisabilityRepo{
 		db: db,
 	}

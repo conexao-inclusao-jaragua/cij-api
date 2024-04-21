@@ -1,18 +1,21 @@
 package repo
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
 	"errors"
 
 	"gorm.io/gorm"
 )
 
+type NewsRepo interface {
+	ListNews() ([]model.News, error)
+}
+
 type newsRepo struct {
 	db *gorm.DB
 }
 
-func NewNewsRepo(db *gorm.DB) domain.NewsRepo {
+func NewNewsRepo(db *gorm.DB) NewsRepo {
 	return &newsRepo{
 		db: db,
 	}

@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/service"
 	"net/http"
 	"strconv"
 
@@ -10,10 +10,10 @@ import (
 )
 
 type CompanyController struct {
-	companyService domain.CompanyService
+	companyService service.CompanyService
 }
 
-func NewCompanyController(companyService domain.CompanyService) *CompanyController {
+func NewCompanyController(companyService service.CompanyService) *CompanyController {
 	return &CompanyController{
 		companyService: companyService,
 	}

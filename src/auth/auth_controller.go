@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/service"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
@@ -10,9 +10,9 @@ import (
 
 type AuthController struct {
 	authService    AuthService
-	personService  domain.PersonService
-	companyService domain.CompanyService
-	addressService domain.AddressService
+	personService  service.PersonService
+	companyService service.CompanyService
+	addressService service.AddressService
 }
 
 type TokenRequest struct {
@@ -20,7 +20,7 @@ type TokenRequest struct {
 }
 
 func NewAuthController(
-	authService AuthService, personService domain.PersonService, companyService domain.CompanyService, addressService domain.AddressService,
+	authService AuthService, personService service.PersonService, companyService service.CompanyService, addressService service.AddressService,
 ) *AuthController {
 	return &AuthController{
 		authService:    authService,

@@ -1,18 +1,18 @@
 package controller
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/service"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type NewsController struct {
-	newsService domain.NewsService
+	newsService service.NewsService
 }
 
-func NewNewsController(newsService domain.NewsService) *NewsController {
+func NewNewsController(newsService service.NewsService) *NewsController {
 	return &NewsController{
 		newsService: newsService,
 	}
