@@ -28,7 +28,7 @@ func NewPersonController(personService service.PersonService) *PersonController 
 // @Summary Create a new person.
 // @Description create a new person and their user.
 // @Tags People
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param person body model.PersonRequest true "Person"
 // @Success 200 {object} MessageResponse
@@ -103,7 +103,7 @@ func (n *PersonController) CreatePerson(ctx *fiber.Ctx) error {
 // @Summary List all registered people.
 // @Description list all registered people and their users.
 // @Tags People
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Success 200 {array} model.PersonResponse
 // @Failure 404 {object} MessageResponse
@@ -142,7 +142,7 @@ func (n *PersonController) ListPeople(ctx *fiber.Ctx) error {
 // @Summary Update a person.
 // @Description update an existent person and their user.
 // @Tags People
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param person body model.PersonRequest true "Person"
 // @Param id path string true "Person ID"
@@ -219,7 +219,7 @@ func (n *PersonController) UpdatePerson(ctx *fiber.Ctx) error {
 // @Summary Update a person address.
 // @Description update an existent person address.
 // @Tags People
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param address body model.AddressRequest true "Address"
 // @Param id path string true "Person ID"
@@ -296,7 +296,7 @@ func (n *PersonController) UpdatePersonAddress(ctx *fiber.Ctx) error {
 // @Summary Update a person disabilities.
 // @Description update an existent person disabilities.
 // @Tags People
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param disabilities body []model.DisabilityRequest true "Disabilities"
 // @Param id path string true "Person ID"
@@ -373,7 +373,7 @@ func (n *PersonController) UpdatePersonDisabilities(ctx *fiber.Ctx) error {
 // @Summary Delete a person.
 // @Description delete an existent person and their user.
 // @Tags People
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param id path string true "Person ID"
 // @Success 200 {object} MessageResponse

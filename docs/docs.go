@@ -22,7 +22,7 @@ const docTemplate = `{
             "get": {
                 "description": "list all registered companies and their users.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -58,7 +58,7 @@ const docTemplate = `{
             "post": {
                 "description": "create a new company and their user.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -104,7 +104,7 @@ const docTemplate = `{
             "put": {
                 "description": "update an existent company and their user.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -155,7 +155,7 @@ const docTemplate = `{
             "delete": {
                 "description": "delete an existent company and their user.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -199,7 +199,7 @@ const docTemplate = `{
             "post": {
                 "description": "get user information by token.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -269,7 +269,7 @@ const docTemplate = `{
             "post": {
                 "description": "do login and returns token.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -315,7 +315,7 @@ const docTemplate = `{
             "get": {
                 "description": "list all registered news.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -353,7 +353,7 @@ const docTemplate = `{
             "get": {
                 "description": "list all registered people and their users.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -389,7 +389,7 @@ const docTemplate = `{
             "post": {
                 "description": "create a new person and their user.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -435,7 +435,7 @@ const docTemplate = `{
             "put": {
                 "description": "update an existent person and their user.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -486,7 +486,7 @@ const docTemplate = `{
             "delete": {
                 "description": "delete an existent person and their user.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -530,7 +530,7 @@ const docTemplate = `{
             "put": {
                 "description": "update an existent person address.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -583,7 +583,7 @@ const docTemplate = `{
             "put": {
                 "description": "update an existent person disabilities.",
                 "consumes": [
-                    "*/*"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
