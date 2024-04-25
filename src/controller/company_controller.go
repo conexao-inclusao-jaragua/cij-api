@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/service"
 	"net/http"
 	"strconv"
 
@@ -10,10 +10,10 @@ import (
 )
 
 type CompanyController struct {
-	companyService domain.CompanyService
+	companyService service.CompanyService
 }
 
-func NewCompanyController(companyService domain.CompanyService) *CompanyController {
+func NewCompanyController(companyService service.CompanyService) *CompanyController {
 	return &CompanyController{
 		companyService: companyService,
 	}
@@ -23,7 +23,7 @@ func NewCompanyController(companyService domain.CompanyService) *CompanyControll
 // @Summary Create a new company.
 // @Description create a new company and their user.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param company body model.CompanyRequest true "Company"
 // @Success 200 {object} string "success"
@@ -61,7 +61,7 @@ func (n *CompanyController) CreateCompany(ctx *fiber.Ctx) error {
 // @Summary List all registered companies.
 // @Description list all registered companies and their users.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Success 200 {array} model.CompanyResponse
 // @Failure 404 {object} string "not found"
@@ -99,7 +99,7 @@ func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 // @Summary Update a company.
 // @Description update an existent company and their user.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param company body model.CompanyRequest true "Company"
 // @Param id path string true "Company ID"
@@ -149,7 +149,7 @@ func (n *CompanyController) UpdateCompany(ctx *fiber.Ctx) error {
 // @Summary Delete a company.
 // @Description delete an existent company and their user.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param id path string true "Company ID"
 // @Success 200 {object} string "success"

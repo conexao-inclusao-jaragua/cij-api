@@ -1,16 +1,20 @@
 package service
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/repo"
 	"errors"
 )
 
-type addressService struct {
-	addressRepo domain.AddressRepo
+type AddressService interface {
+	GetAddressById(id int) (model.Address, error)
 }
 
-func NewAddressService(addressRepo domain.AddressRepo) domain.AddressService {
+type addressService struct {
+	addressRepo repo.AddressRepo
+}
+
+func NewAddressService(addressRepo repo.AddressRepo) AddressService {
 	return &addressService{
 		addressRepo: addressRepo,
 	}

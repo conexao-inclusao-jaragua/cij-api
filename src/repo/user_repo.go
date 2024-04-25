@@ -1,18 +1,26 @@
 package repo
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
 	"errors"
 
 	"gorm.io/gorm"
 )
 
+type UserRepo interface {
+	CreateUser(createUser model.User) (int, error)
+	ListUsers() ([]model.User, error)
+	GetUserByEmail(email string) (model.User, error)
+	GetUserById(id int) (model.User, error)
+	UpdateUser(user model.User, userId int) error
+	DeleteUser(id int) error
+}
+
 type userRepo struct {
 	db *gorm.DB
 }
 
-func NewUserRepo(db *gorm.DB) domain.UserRepo {
+func NewUserRepo(db *gorm.DB) UserRepo {
 	return &userRepo{
 		db: db,
 	}

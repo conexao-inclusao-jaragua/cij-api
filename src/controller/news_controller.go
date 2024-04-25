@@ -1,18 +1,18 @@
 package controller
 
 import (
-	"cij_api/src/domain"
 	"cij_api/src/model"
+	"cij_api/src/service"
 	"net/http"
 
 	"github.com/gofiber/fiber/v2"
 )
 
 type NewsController struct {
-	newsService domain.NewsService
+	newsService service.NewsService
 }
 
-func NewNewsController(newsService domain.NewsService) *NewsController {
+func NewNewsController(newsService service.NewsService) *NewsController {
 	return &NewsController{
 		newsService: newsService,
 	}
@@ -22,7 +22,7 @@ func NewNewsController(newsService domain.NewsService) *NewsController {
 // @Summary List all registered news.
 // @Description list all registered news.
 // @Tags News
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Success 200 {array} model.NewsResponse
 // @Failure 404 {object} string "not found"
