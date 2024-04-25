@@ -22,7 +22,7 @@ func NewNewsController(newsService service.NewsService) *NewsController {
 // @Summary List all registered news.
 // @Description list all registered news.
 // @Tags News
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Success 200 {array} model.NewsResponse
 // @Failure 404 {object} string "not found"

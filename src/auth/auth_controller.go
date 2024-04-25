@@ -34,7 +34,7 @@ func NewAuthController(
 // @Summary Do login.
 // @Description do login and returns token.
 // @Tags Auth
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param credentials body model.Credentials true "Credentials"
 // @Success 200 {object} model.LoginResponse
@@ -83,7 +83,7 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 // @Summary Get user information.
 // @Description get user information by token.
 // @Tags Auth
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param token body TokenRequest true "Token"
 // @Success 200 {object} model.LoginResponse

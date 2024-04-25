@@ -23,7 +23,7 @@ func NewCompanyController(companyService service.CompanyService) *CompanyControl
 // @Summary Create a new company.
 // @Description create a new company and their user.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param company body model.CompanyRequest true "Company"
 // @Success 200 {object} string "success"
@@ -61,7 +61,7 @@ func (n *CompanyController) CreateCompany(ctx *fiber.Ctx) error {
 // @Summary List all registered companies.
 // @Description list all registered companies and their users.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Success 200 {array} model.CompanyResponse
 // @Failure 404 {object} string "not found"
@@ -99,7 +99,7 @@ func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 // @Summary Update a company.
 // @Description update an existent company and their user.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param company body model.CompanyRequest true "Company"
 // @Param id path string true "Company ID"
@@ -149,7 +149,7 @@ func (n *CompanyController) UpdateCompany(ctx *fiber.Ctx) error {
 // @Summary Delete a company.
 // @Description delete an existent company and their user.
 // @Tags Companies
-// @Accept */*
+// @Accept application/json
 // @Produce json
 // @Param id path string true "Company ID"
 // @Success 200 {object} string "success"

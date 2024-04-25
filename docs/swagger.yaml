@@ -213,7 +213,7 @@ paths:
   /companies:
     get:
       consumes:
-      - '*/*'
+      - application/json
       description: list all registered companies and their users.
       produces:
       - application/json
@@ -237,7 +237,7 @@ paths:
       - Companies
     post:
       consumes:
-      - '*/*'
+      - application/json
       description: create a new company and their user.
       parameters:
       - description: Company
@@ -267,7 +267,7 @@ paths:
   /companies/:id:
     delete:
       consumes:
-      - '*/*'
+      - application/json
       description: delete an existent company and their user.
       parameters:
       - description: Company ID
@@ -295,7 +295,7 @@ paths:
       - Companies
     put:
       consumes:
-      - '*/*'
+      - application/json
       description: update an existent company and their user.
       parameters:
       - description: Company
@@ -330,7 +330,7 @@ paths:
   /get-user-data:
     post:
       consumes:
-      - '*/*'
+      - application/json
       description: get user information by token.
       parameters:
       - description: Token
@@ -376,7 +376,7 @@ paths:
   /login:
     post:
       consumes:
-      - '*/*'
+      - application/json
       description: do login and returns token.
       parameters:
       - description: Credentials
@@ -406,7 +406,7 @@ paths:
   /news:
     get:
       consumes:
-      - '*/*'
+      - application/json
       description: list all registered news.
       produces:
       - application/json
@@ -431,7 +431,7 @@ paths:
   /people:
     get:
       consumes:
-      - '*/*'
+      - application/json
       description: list all registered people and their users.
       produces:
       - application/json
@@ -455,7 +455,7 @@ paths:
       - People
     post:
       consumes:
-      - '*/*'
+      - application/json
       description: create a new person and their user.
       parameters:
       - description: Person
@@ -485,7 +485,7 @@ paths:
   /people/:id:
     delete:
       consumes:
-      - '*/*'
+      - application/json
       description: delete an existent person and their user.
       parameters:
       - description: Person ID
@@ -513,7 +513,7 @@ paths:
       - People
     put:
       consumes:
-      - '*/*'
+      - application/json
       description: update an existent person and their user.
       parameters:
       - description: Person
@@ -548,7 +548,7 @@ paths:
   /people/:id/address:
     put:
       consumes:
-      - '*/*'
+      - application/json
       description: update an existent person address.
       parameters:
       - description: Address
@@ -583,7 +583,7 @@ paths:
   /people/:id/disabilities:
     put:
       consumes:
-      - '*/*'
+      - application/json
       description: update an existent person disabilities.
       parameters:
       - description: Disabilities
