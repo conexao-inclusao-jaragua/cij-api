@@ -2,13 +2,13 @@ package repo
 
 import (
 	"cij_api/src/model"
-	"errors"
+	"cij_api/src/utils"
 
 	"gorm.io/gorm"
 )
 
 type NewsRepo interface {
-	ListNews() ([]model.News, error)
+	ListNews() ([]model.News, utils.Error)
 }
 
 type newsRepo struct {
@@ -21,13 +21,19 @@ func NewNewsRepo(db *gorm.DB) NewsRepo {
 	}
 }
 
-func (r *newsRepo) ListNews() ([]model.News, error) {
+func newsRepoError(message string, code string) utils.Error {
+	errorCode := utils.NewErrorCode(utils.DatabaseErrorCode, utils.NewsErrorType, code)
+
+	return utils.NewError(message, errorCode)
+}
+
+func (r *newsRepo) ListNews() ([]model.News, utils.Error) {
 	var news []model.News
 
 	err := r.db.Model(model.News{}).Find(&news).Error
 	if err != nil {
-		return news, errors.New("error on list news from database")
+		return news, newsRepoError("failed to list the news", "01")
 	}
 
-	return news, nil
+	return news, utils.Error{}
 }

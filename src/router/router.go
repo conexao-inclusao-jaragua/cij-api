@@ -46,8 +46,10 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 
 	api := router.Group("/people")
 	{
-		api.Post("/", personController.CreatePerson)
 		api.Get("/", personController.ListPeople)
+		api.Post("/", personController.CreatePerson)
+
+		api.Use(middleware.AuthUser)
 		api.Put("/:id", personController.UpdatePerson)
 		api.Put("/:id/address", personController.UpdatePersonAddress)
 		api.Put("/:id/disabilities", personController.UpdatePersonDisabilities)

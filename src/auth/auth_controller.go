@@ -54,18 +54,20 @@ func (c *AuthController) Authenticate(ctx *fiber.Ctx) error {
 	}
 
 	user, err := c.authService.Authenticate(credentials)
-	if err != nil {
+	if err.Code != "" {
 		response = model.LoginResponse{
 			Message: err.Error(),
+			Code:    err.Code,
 		}
 
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
 	token, err := c.authService.GenerateToken(user)
-	if err != nil {
+	if err.Code != "" {
 		response = model.LoginResponse{
 			Message: err.Error(),
+			Code:    err.Code,
 		}
 
 		return ctx.Status(http.StatusBadRequest).JSON(response)
@@ -103,9 +105,10 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 	}
 
 	user, err := c.authService.GetUserData(token.Token)
-	if err != nil {
+	if err.Code != "" {
 		response = model.LoginResponse{
 			Message: err.Error(),
+			Code:    err.Code,
 		}
 
 		return ctx.Status(http.StatusInternalServerError).JSON(response)
@@ -113,9 +116,10 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 
 	if user.RoleId == 2 {
 		company, err := c.companyService.GetCompanyByUserId(user.Id)
-		if err != nil {
+		if err.Code != "" {
 			response = model.LoginResponse{
 				Message: err.Error(),
+				Code:    err.Code,
 			}
 
 			return ctx.Status(http.StatusInternalServerError).JSON(response)
@@ -125,9 +129,10 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 
 		if company.AddressId != nil {
 			address, err := c.addressService.GetAddressById(*company.AddressId)
-			if err != nil {
+			if err.Code != "" {
 				response = model.LoginResponse{
 					Message: err.Error(),
+					Code:    err.Code,
 				}
 
 				return ctx.Status(http.StatusInternalServerError).JSON(response)
@@ -149,6 +154,7 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 		if err.Code != "" {
 			response = model.LoginResponse{
 				Message: err.Error(),
+				Code:    err.Code,
 			}
 
 			return ctx.Status(http.StatusInternalServerError).JSON(response)
@@ -158,9 +164,10 @@ func (c *AuthController) GetUserData(ctx *fiber.Ctx) error {
 
 		if person.AddressId != nil {
 			address, err := c.addressService.GetAddressById(*person.AddressId)
-			if err != nil {
+			if err.Code != "" {
 				response = model.LoginResponse{
 					Message: err.Error(),
+					Code:    err.Code,
 				}
 
 				return ctx.Status(http.StatusInternalServerError).JSON(response)
