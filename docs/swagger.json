@@ -9,7 +9,7 @@
         },
         "version": "1.0"
     },
-    "host": "conexao-inclusao.com",
+    "host": "localhost:3040",
     "basePath": "/",
     "paths": {
         "/companies": {
@@ -855,9 +855,23 @@
                 }
             }
         },
+        "model.Field": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "model.LoginResponse": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -871,6 +885,12 @@
             "type": "object",
             "properties": {
                 "author": {
+                    "type": "string"
+                },
+                "author_image": {
+                    "type": "string"
+                },
+                "banner": {
                     "type": "string"
                 },
                 "date": {
@@ -978,7 +998,7 @@
                 "fields": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/model.Field"
                     }
                 },
                 "message": {
@@ -1017,7 +1037,7 @@
                 "fields": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/model.Field"
                     }
                 },
                 "message": {

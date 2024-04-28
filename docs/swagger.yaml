@@ -102,8 +102,17 @@ definitions:
       id:
         type: integer
     type: object
+  model.Field:
+    properties:
+      name:
+        type: string
+      value:
+        type: string
+    type: object
   model.LoginResponse:
     properties:
+      code:
+        type: string
       message:
         type: string
       token:
@@ -113,6 +122,10 @@ definitions:
   model.NewsResponse:
     properties:
       author:
+        type: string
+      author_image:
+        type: string
+      banner:
         type: string
       date:
         type: string
@@ -183,7 +196,7 @@ definitions:
       data: {}
       fields:
         items:
-          type: string
+          $ref: '#/definitions/model.Field'
         type: array
       message:
         type: string
@@ -208,12 +221,12 @@ definitions:
         type: string
       fields:
         items:
-          type: string
+          $ref: '#/definitions/model.Field'
         type: array
       message:
         type: string
     type: object
-host: conexao-inclusao.com
+host: localhost:3040
 info:
   contact:
     email: cauakathdev@gmail.com

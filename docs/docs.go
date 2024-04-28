@@ -861,9 +861,23 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Field": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "model.LoginResponse": {
             "type": "object",
             "properties": {
+                "code": {
+                    "type": "string"
+                },
                 "message": {
                     "type": "string"
                 },
@@ -877,6 +891,12 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "author": {
+                    "type": "string"
+                },
+                "author_image": {
+                    "type": "string"
+                },
+                "banner": {
                     "type": "string"
                 },
                 "date": {
@@ -984,7 +1004,7 @@ const docTemplate = `{
                 "fields": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/model.Field"
                     }
                 },
                 "message": {
@@ -1023,7 +1043,7 @@ const docTemplate = `{
                 "fields": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/model.Field"
                     }
                 },
                 "message": {
@@ -1037,7 +1057,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "conexao-inclusao.com",
+	Host:             "localhost:3040",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "CIJ Project API",
