@@ -46,17 +46,9 @@ func migrateDb(db *gorm.DB) {
 }
 
 func createDefaultRoles(db *gorm.DB) {
-	db.Create(&model.Role{
-		Name: "person",
-	})
-
-	db.Create(&model.Role{
-		Name: "company",
-	})
-
-	db.Create(&model.Role{
-		Name: "admin",
-	})
+	db.Exec("INSERT IGNORE INTO roles (name) VALUES ('person')")
+	db.Exec("INSERT IGNORE INTO roles (name) VALUES ('company')")
+	db.Exec("INSERT IGNORE INTO roles (name) VALUES ('admin')")
 }
 
 func startServer(db *gorm.DB) {

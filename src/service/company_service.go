@@ -4,15 +4,16 @@ import (
 	"cij_api/src/model"
 	"cij_api/src/repo"
 	"cij_api/src/utils"
-	"errors"
 )
 
 type CompanyService interface {
-	CreateCompany(createCompany model.CompanyRequest) error
-	ListCompanies() ([]model.CompanyResponse, error)
-	GetCompanyByUserId(userId int) (model.Company, error)
-	UpdateCompany(company model.CompanyRequest, companyId int) error
-	DeleteCompany(companyId int) error
+	CreateCompany(createCompany model.CompanyRequest) utils.Error
+	ListCompanies() ([]model.CompanyResponse, utils.Error)
+	GetCompanyByUserId(userId int) (model.Company, utils.Error)
+	GetCompanyByCnpj(cnpj string) (model.Company, utils.Error)
+	GetUserByEmail(email string) (model.User, utils.Error)
+	UpdateCompany(company model.CompanyRequest, companyId int) utils.Error
+	DeleteCompany(companyId int) utils.Error
 }
 
 type companyService struct {
@@ -29,25 +30,31 @@ func NewCompanyService(companyRepo repo.CompanyRepo, userRepo repo.UserRepo, add
 	}
 }
 
-func (s *companyService) ListCompanies() ([]model.CompanyResponse, error) {
+func companyServiceError(message string, code string) utils.Error {
+	errorCode := utils.NewErrorCode(utils.ServiceErrorCode, utils.CompanyErrorType, code)
+
+	return utils.NewError(message, errorCode)
+}
+
+func (s *companyService) ListCompanies() ([]model.CompanyResponse, utils.Error) {
 	companiesResponse := []model.CompanyResponse{}
 
 	companies, err := s.companyRepo.ListCompanies()
-	if err != nil {
-		return companiesResponse, errors.New("failed to list companies")
+	if err.Code != "" {
+		return companiesResponse, err
 	}
 
 	for _, company := range companies {
 		user, err := s.userRepo.GetUserById(company.User.Id)
-		if err != nil {
-			return companiesResponse, errors.New("failed to get user")
+		if err.Code != "" {
+			return companiesResponse, err
 		}
 
 		companyResponse := company.ToResponse(user)
 
 		address, err := s.addressRepo.GetAddressById(*company.AddressId)
-		if err != nil {
-			return companiesResponse, errors.New("failed to get address")
+		if err.Code != "" {
+			return companiesResponse, err
 		}
 
 		if address.Id != 0 {
@@ -58,118 +65,148 @@ func (s *companyService) ListCompanies() ([]model.CompanyResponse, error) {
 		companiesResponse = append(companiesResponse, companyResponse)
 	}
 
-	return companiesResponse, nil
+	return companiesResponse, utils.Error{}
 }
 
-func (n *companyService) CreateCompany(createCompany model.CompanyRequest) error {
+func (n *companyService) CreateCompany(createCompany model.CompanyRequest) utils.Error {
 	userInfo := createCompany.ToUser()
 
 	hashedPassword, err := utils.EncryptPassword(userInfo.Password)
 	if err != nil {
-		return errors.New("error on encrypt company password")
+		return companyServiceError("failed to encrypt the password", "01")
 	}
 
 	userInfo.Password = hashedPassword
 	userInfo.RoleId = 2 // 2 is the id of the role "company"
 
-	userId, err := n.userRepo.CreateUser(userInfo)
-	if err != nil {
-		return errors.New("error on create user")
+	userId, userError := n.userRepo.CreateUser(userInfo)
+	if userError.Code != "" {
+		return userError
 	}
 
 	addressInfo := createCompany.ToAddress()
 
-	addressId, err := n.addressRepo.UpsertAddress(addressInfo)
-	if err != nil {
-		n.userRepo.DeleteUser(userId)
+	addressId, addresError := n.addressRepo.UpsertAddress(addressInfo)
+	if addresError.Code != "" {
+		userError = n.userRepo.DeleteUser(userId)
+		if userError.Code != "" {
+			return userError
+		}
 
-		return errors.New("error on create address")
+		return addresError
 	}
 
 	companyInfo := createCompany.ToModel(userInfo)
 	companyInfo.UserId = userId
 	companyInfo.AddressId = &addressId
 
-	err = n.companyRepo.CreateCompany(companyInfo)
-	if err != nil {
-		n.userRepo.DeleteUser(userId)
-		n.addressRepo.DeleteAddress(addressId)
+	companyError := n.companyRepo.CreateCompany(companyInfo)
+	if companyError.Code != "" {
+		userError = n.userRepo.DeleteUser(userId)
+		if userError.Code != "" {
+			return userError
+		}
 
-		return errors.New("error on create company")
+		addresError = n.addressRepo.DeleteAddress(addressId)
+		if addresError.Code != "" {
+			return addresError
+		}
+
+		return companyError
 	}
 
-	return nil
+	return utils.Error{}
 }
 
-func (n *companyService) GetCompanyByUserId(userId int) (model.Company, error) {
+func (n *companyService) GetCompanyByUserId(userId int) (model.Company, utils.Error) {
 	company, err := n.companyRepo.GetCompanyByUserId(userId)
-	if err != nil {
-		return company, errors.New("failed to get the company")
+	if err.Code != "" {
+		return company, err
 	}
 
-	return company, nil
+	return company, utils.Error{}
 }
 
-func (n *companyService) UpdateCompany(updateCompany model.CompanyRequest, companyId int) error {
+func (n *companyService) GetCompanyByCnpj(cnpj string) (model.Company, utils.Error) {
+	company, err := n.companyRepo.GetCompanyByCnpj(cnpj)
+	if err.Code != "" {
+		return company, err
+	}
+
+	return company, utils.Error{}
+}
+
+func (n *companyService) UpdateCompany(updateCompany model.CompanyRequest, companyId int) utils.Error {
 	userInfo := updateCompany.ToUser()
 
-	hashedPassword, err := utils.EncryptPassword(userInfo.Password)
-	if err != nil {
-		return errors.New("error on encrypt company password")
-	}
+	if userInfo.Password == "" {
+		hashedPassword, err := utils.EncryptPassword(userInfo.Password)
+		if err != nil {
+			return companyServiceError("failed to encrypt the password", "02")
+		}
 
-	userInfo.Password = hashedPassword
+		userInfo.Password = hashedPassword
 
-	err = n.userRepo.UpdateUser(userInfo, companyId)
-	if err != nil {
-		return errors.New("failed to update the user")
+		userError := n.userRepo.UpdateUser(userInfo, companyId)
+		if userError.Code != "" {
+			return userError
+		}
 	}
 
 	addressInfo := updateCompany.ToAddress()
 
-	company, err := n.companyRepo.GetCompanyById(companyId)
-	if err != nil {
-		return errors.New("failed to get the company")
+	company, companyError := n.companyRepo.GetCompanyById(companyId)
+	if companyError.Code != "" {
+		return companyError
 	}
 
 	addressInfo.Id = *company.AddressId
 
-	addressId, err := n.addressRepo.UpsertAddress(addressInfo)
-	if err != nil {
-		return errors.New("error on create address")
+	addressId, addresError := n.addressRepo.UpsertAddress(addressInfo)
+	if addresError.Code != "" {
+		return addresError
 	}
 
 	companyInfo := updateCompany.ToModel(userInfo)
 	companyInfo.AddressId = &addressId
 
-	err = n.companyRepo.UpdateCompany(companyInfo, companyId)
-	if err != nil {
-		return errors.New("failed to update the company")
+	companyError = n.companyRepo.UpdateCompany(companyInfo, companyId)
+	if companyError.Code != "" {
+		return companyError
 	}
 
-	return nil
+	return utils.Error{}
 }
 
-func (n *companyService) DeleteCompany(companyId int) error {
+func (n *companyService) DeleteCompany(companyId int) utils.Error {
 	company, err := n.companyRepo.GetCompanyById(companyId)
-	if err != nil {
-		return errors.New("failed to get the company")
+	if err.Code != "" {
+		return err
 	}
 
 	err = n.companyRepo.DeleteCompany(companyId)
-	if err != nil {
-		return errors.New("failed to delete the company")
+	if err.Code != "" {
+		return err
 	}
 
 	err = n.userRepo.DeleteUser(company.UserId)
-	if err != nil {
-		return errors.New("failed to delete user")
+	if err.Code != "" {
+		return err
 	}
 
 	err = n.addressRepo.DeleteAddress(*company.AddressId)
-	if err != nil {
-		return errors.New("failed to delete address")
+	if err.Code != "" {
+		return err
 	}
 
-	return nil
+	return utils.Error{}
+}
+
+func (n *companyService) GetUserByEmail(email string) (model.User, utils.Error) {
+	user, err := n.userRepo.GetUserByEmail(email)
+	if err.Code != "" {
+		return user, err
+	}
+
+	return user, utils.Error{}
 }

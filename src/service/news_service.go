@@ -3,11 +3,11 @@ package service
 import (
 	"cij_api/src/model"
 	"cij_api/src/repo"
-	"errors"
+	"cij_api/src/utils"
 )
 
 type NewsService interface {
-	ListNews() ([]model.NewsResponse, error)
+	ListNews() ([]model.NewsResponse, utils.Error)
 }
 
 type newsService struct {
@@ -20,17 +20,17 @@ func NewNewsService(newsRepo repo.NewsRepo) NewsService {
 	}
 }
 
-func (n *newsService) ListNews() ([]model.NewsResponse, error) {
+func (n *newsService) ListNews() ([]model.NewsResponse, utils.Error) {
 	newsResponse := []model.NewsResponse{}
 
 	news, err := n.newsRepo.ListNews()
-	if err != nil {
-		return newsResponse, errors.New("failed to list news")
+	if err.Code != "" {
+		return newsResponse, err
 	}
 
 	for _, news := range news {
 		newsResponse = append(newsResponse, news.ToResponse())
 	}
 
-	return newsResponse, nil
+	return newsResponse, utils.Error{}
 }
