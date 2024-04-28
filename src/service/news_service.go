@@ -4,7 +4,6 @@ import (
 	"cij_api/src/model"
 	"cij_api/src/repo"
 	"cij_api/src/utils"
-	"errors"
 
 	"mime/multipart"
 	"strings"
@@ -23,6 +22,12 @@ func NewNewsService(newsRepo repo.NewsRepo) NewsService {
 	return &newsService{
 		newsRepo: newsRepo,
 	}
+}
+
+func newsServiceError(message string, code string) utils.Error {
+	errorCode := utils.NewErrorCode(utils.ServiceErrorCode, utils.NewsErrorType, code)
+
+	return utils.NewError(message, errorCode)
 }
 
 func (n *newsService) ListNews() ([]model.NewsResponse, utils.Error) {
@@ -47,7 +52,7 @@ func (n *newsService) CreateNews(createNews model.NewsRequest, images map[string
 	for fileName, image := range images {
 		openedFile, err := image.Open()
 		if err != nil {
-			return errors.New("failed to open file")
+			return newsServiceError("failed to open file", "01")
 		}
 
 		defer openedFile.Close()
@@ -56,7 +61,7 @@ func (n *newsService) CreateNews(createNews model.NewsRequest, images map[string
 		case "banner":
 			fileUrl, err := filesService.UploadFile(openedFile, "cij/news/banner/"+strings.Split(image.Filename, ".")[0])
 			if err != nil {
-				return errors.New("failed to upload file")
+				return newsServiceError("failed to upload file", "02")
 			}
 
 			news.Banner = fileUrl
@@ -64,13 +69,13 @@ func (n *newsService) CreateNews(createNews model.NewsRequest, images map[string
 		case "author_image":
 			fileUrl, err := filesService.UploadFile(openedFile, "cij/news/author_image/"+strings.Split(image.Filename, ".")[0])
 			if err != nil {
-				return errors.New("failed to upload file")
+				return newsServiceError("failed to upload file", "03")
 			}
 
 			news.AuthorImage = fileUrl
 
 		default:
-			return errors.New("invalid file name")
+			return newsServiceError("invalid file name", "04")
 		}
 	}
 

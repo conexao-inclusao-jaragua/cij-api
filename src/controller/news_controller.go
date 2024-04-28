@@ -86,8 +86,8 @@ func (n *NewsController) CreateNews(ctx *fiber.Ctx) error {
 		files[filename] = *file[0]
 	}
 
-	err = n.newsService.CreateNews(request, files)
-	if err != nil {
+	newsError := n.newsService.CreateNews(request, files)
+	if newsError.Code != "" {
 		return ctx.Status(http.StatusInternalServerError).JSON(model.Response{
 			Message: err.Error(),
 		})
