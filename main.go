@@ -17,7 +17,7 @@ import (
 // @description This is the API for the CIJ project
 // @contact.name API Support
 // @contact.email cauakathdev@gmail.com
-// @host localhost:3040
+// @host conexao-inclusao.com
 // @BasePath /
 func main() {
 	loadConfig, err := config.LoadConfig(".")
