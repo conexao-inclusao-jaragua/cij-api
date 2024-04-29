@@ -69,6 +69,7 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	api = router.Group("/news")
 	{
 		api.Get("/", newsController.ListNews)
+		api.Post("/", newsController.CreateNews)
 	}
 
 	return router
