@@ -10,7 +10,7 @@ type User struct {
 	Id       int    `gorm:"type:int;primaryKey;autoIncrement;not null" json:"id"`
 	Email    string `gorm:"type:varchar(255);not null;unique" json:"email"`
 	Password string `gorm:"type:varchar(255);not null" json:"password"`
-	RoleId   int    `gorm:"type:int;not null" json:"role_id"`
+	RoleId   RoleId `gorm:"type:int;not null" json:"role_id"`
 	Role     *Role
 }
 

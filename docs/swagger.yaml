@@ -271,6 +271,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/model.CompanyRequest'
+      - description: Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -298,6 +303,11 @@ paths:
       - description: Company ID
         in: path
         name: id
+        required: true
+        type: string
+      - description: Token
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
@@ -332,6 +342,11 @@ paths:
       - description: Company ID
         in: path
         name: id
+        required: true
+        type: string
+      - description: Token
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:

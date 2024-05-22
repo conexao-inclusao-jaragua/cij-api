@@ -281,7 +281,7 @@ func (n *PersonController) UpdatePersonAddress(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusNotFound).JSON(response)
 	}
 
-	if err := n.personService.UpdatePersonAddress(addressRequest, idInt); err.Code != "" {
+	if err := n.personService.UpdatePersonAddress(addressRequest, idInt, nil); err.Code != "" {
 		response = model.Response{
 			Message: err.Error(),
 			Code:    err.GetCode(),
@@ -358,7 +358,7 @@ func (n *PersonController) UpdatePersonDisabilities(ctx *fiber.Ctx) error {
 		return ctx.Status(http.StatusBadRequest).JSON(response)
 	}
 
-	if err := n.personService.UpdatePersonDisabilities(disabilities, idInt); err.Code != "" {
+	if err := n.personService.UpdatePersonDisabilities(disabilities, idInt, nil); err.Code != "" {
 		response = model.Response{
 			Message: err.Error(),
 			Code:    err.GetCode(),

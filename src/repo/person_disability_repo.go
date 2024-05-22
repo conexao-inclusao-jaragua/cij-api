@@ -9,20 +9,27 @@ import (
 )
 
 type PersonDisabilityRepo interface {
+	BaseRepoMethods
+
 	GetPersonDisabilities(personId int) ([]model.PersonDisability, utils.Error)
 	GetDisabilityById(disabilityId int) (model.Disability, utils.Error)
-	UpsertPersonDisability(personDisability model.PersonDisability) utils.Error
-	ClearPersonDisability(personId int) utils.Error
+	UpsertPersonDisability(personDisability model.PersonDisability, tx *gorm.DB) utils.Error
+	ClearPersonDisability(personId int, tx *gorm.DB) utils.Error
 }
 
 type personDisabilityRepo struct {
+	BaseRepo
 	db *gorm.DB
 }
 
 func NewPersonDisabilityRepo(db *gorm.DB) PersonDisabilityRepo {
-	return &personDisabilityRepo{
+	repo := &personDisabilityRepo{
 		db: db,
 	}
+
+	repo.SetRepo(repo.db)
+
+	return repo
 }
 
 func personDisabilityRepoError(message string, code string) utils.Error {
@@ -53,8 +60,14 @@ func (n *personDisabilityRepo) GetDisabilityById(disabilityId int) (model.Disabi
 	return disability, utils.Error{}
 }
 
-func (n *personDisabilityRepo) UpsertPersonDisability(personDisability model.PersonDisability) utils.Error {
-	err := n.db.Clauses(clause.OnConflict{
+func (n *personDisabilityRepo) UpsertPersonDisability(personDisability model.PersonDisability, tx *gorm.DB) utils.Error {
+	databaseConn := n.db
+
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	err := databaseConn.Clauses(clause.OnConflict{
 		Columns:   []clause.Column{{Name: "person_id"}, {Name: "disability_id"}},
 		DoUpdates: clause.AssignmentColumns([]string{"acquired"}),
 	}).Create(&personDisability).Error
@@ -66,8 +79,14 @@ func (n *personDisabilityRepo) UpsertPersonDisability(personDisability model.Per
 	return utils.Error{}
 }
 
-func (n *personDisabilityRepo) ClearPersonDisability(personId int) utils.Error {
-	if err := n.db.Where("person_id = ?", personId).Delete(&model.PersonDisability{}).Error; err != nil {
+func (n *personDisabilityRepo) ClearPersonDisability(personId int, tx *gorm.DB) utils.Error {
+	databaseConn := n.db
+
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	if err := databaseConn.Where("person_id = ?", personId).Delete(&model.PersonDisability{}).Error; err != nil {
 		return personDisabilityRepoError("failed to clear the person disability", "04")
 	}
 

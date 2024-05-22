@@ -33,6 +33,7 @@ func companyControllerError(message string, code string, fields []model.Field) u
 // @Accept application/json
 // @Produce json
 // @Param company body model.CompanyRequest true "Company"
+// @Param Authorization header string true "Token"
 // @Success 200 {object} string "success"
 // @Failure 400 {object} string "bad request"
 // @Failure 500 {object} string "internal server error"
@@ -144,6 +145,7 @@ func (n *CompanyController) ListCompanies(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param company body model.CompanyRequest true "Company"
 // @Param id path string true "Company ID"
+// @Param Authorization header string true "Token"
 // @Success 200 {object} string "success"
 // @Failure 400 {object} string "bad request"
 // @Failure 500 {object} string "internal server error"
@@ -194,6 +196,7 @@ func (n *CompanyController) UpdateCompany(ctx *fiber.Ctx) error {
 // @Accept application/json
 // @Produce json
 // @Param id path string true "Company ID"
+// @Param Authorization header string true "Token"
 // @Success 200 {object} string "success"
 // @Failure 400 {object} string "bad request"
 // @Failure 500 {object} string "internal server error"

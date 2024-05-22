@@ -4,6 +4,9 @@ import (
 	"cij_api/src/model"
 	"cij_api/src/repo"
 	"cij_api/src/utils"
+	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type PersonService interface {
@@ -15,8 +18,8 @@ type PersonService interface {
 	GetUserByEmail(email string) (model.User, utils.Error)
 	GetDisabilityById(disabilityId int) (model.Disability, utils.Error)
 	UpdatePerson(person model.PersonRequest, personId int) utils.Error
-	UpdatePersonAddress(address model.AddressRequest, personId int) utils.Error
-	UpdatePersonDisabilities(disabilities []model.DisabilityRequest, personId int) utils.Error
+	UpdatePersonAddress(address model.AddressRequest, personId int, tx *gorm.DB) utils.Error
+	UpdatePersonDisabilities(disabilities []model.DisabilityRequest, personId int, tx *gorm.DB) utils.Error
 	DeletePerson(personId int) utils.Error
 }
 
@@ -106,54 +109,41 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) utils.Err
 	}
 
 	userInfo.Password = hashedPassword
-	userInfo.RoleId = 1 // 1 is the id of the role "person
+	userInfo.RoleId = model.PersonRole
 
-	userId, userError := n.userRepo.CreateUser(userInfo)
-	if userError.Code != "" {
-		return userError
-	}
-
-	personInfo := createPerson.ToModel(userInfo)
-	personInfo.UserId = userId
-
-	personId, personError := n.personRepo.CreatePerson(personInfo)
-	if personError.Code != "" {
-		userError = n.userRepo.DeleteUser(userId)
+	errTx := n.userRepo.BeginTransaction(func(tx *gorm.DB) error {
+		userId, userError := n.userRepo.CreateUser(userInfo, tx)
 		if userError.Code != "" {
+			fmt.Print("Error: ", userError)
 			return userError
 		}
 
-		return personError
-	}
+		personInfo := createPerson.ToModel(userInfo)
+		personInfo.UserId = userId
 
-	addresError := n.UpdatePersonAddress(createPerson.Address, personId)
-	if addresError.Code != "" {
-		userError = n.userRepo.DeleteUser(userId)
-		if userError.Code != "" {
-			return userError
-		}
-
-		personError = n.personRepo.DeletePerson(personId)
+		personId, personError := n.personRepo.CreatePerson(personInfo, tx)
 		if personError.Code != "" {
+			fmt.Print("Error: ", personError)
 			return personError
 		}
 
-		return addresError
-	}
-
-	disbilityError := n.UpdatePersonDisabilities(createPerson.Disabilities, personId)
-	if disbilityError.Code != "" {
-		userError = n.userRepo.DeleteUser(userId)
-		if userError.Code != "" {
-			return userError
+		addressError := n.UpdatePersonAddress(createPerson.Address, personId, tx)
+		if addressError.Code != "" {
+			fmt.Println("Error: ", addressError)
+			return addressError
 		}
 
-		personError = n.personRepo.DeletePerson(personId)
-		if personError.Code != "" {
-			return personError
+		disabilityError := n.UpdatePersonDisabilities(createPerson.Disabilities, personId, tx)
+		if disabilityError.Code != "" {
+			fmt.Print("Error: ", disabilityError)
+			return disabilityError
 		}
 
-		return disbilityError
+		return nil
+	})
+
+	if errTx != nil {
+		return personServiceError("failed to create the person", "02")
 	}
 
 	return utils.Error{}
@@ -169,7 +159,7 @@ func (n *personService) GetPersonByUserId(userId int) (model.Person, utils.Error
 }
 
 func (n *personService) GetPersonById(personId int) (model.Person, utils.Error) {
-	person, err := n.personRepo.GetPersonById(personId)
+	person, err := n.personRepo.GetPersonById(personId, nil)
 	if err.Code != "" {
 		return person, err
 	}
@@ -214,7 +204,7 @@ func (n *personService) UpdatePerson(updatePerson model.PersonRequest, personId 
 
 	personInfo := updatePerson.ToModel(userInfo)
 
-	personError := n.personRepo.UpdatePerson(personInfo, personId)
+	personError := n.personRepo.UpdatePerson(personInfo, personId, nil)
 	if personError.Code != "" {
 		return personError
 	}
@@ -222,10 +212,10 @@ func (n *personService) UpdatePerson(updatePerson model.PersonRequest, personId 
 	return utils.Error{}
 }
 
-func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, personId int) utils.Error {
+func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, personId int, tx *gorm.DB) utils.Error {
 	addressInfo := updateAddress.ToModel()
 
-	person, err := n.personRepo.GetPersonById(personId)
+	person, err := n.personRepo.GetPersonById(personId, tx)
 	if err.Code != "" {
 		return err
 	}
@@ -234,14 +224,14 @@ func (n *personService) UpdatePersonAddress(updateAddress model.AddressRequest, 
 		addressInfo.Id = *person.AddressId
 	}
 
-	addressId, err := n.addressRepo.UpsertAddress(addressInfo)
+	addressId, err := n.addressRepo.UpsertAddress(addressInfo, tx)
 	if err.Code != "" {
 		return err
 	}
 
 	person.AddressId = &addressId
 
-	err = n.personRepo.UpdatePerson(person, personId)
+	err = n.personRepo.UpdatePerson(person, personId, tx)
 	if err.Code != "" {
 		return err
 	}
@@ -258,13 +248,13 @@ func (n *personService) GetDisabilityById(id int) (model.Disability, utils.Error
 	return disability, utils.Error{}
 }
 
-func (n *personService) UpdatePersonDisabilities(disabilities []model.DisabilityRequest, personId int) utils.Error {
-	person, err := n.personRepo.GetPersonById(personId)
+func (n *personService) UpdatePersonDisabilities(disabilities []model.DisabilityRequest, personId int, tx *gorm.DB) utils.Error {
+	person, err := n.personRepo.GetPersonById(personId, tx)
 	if err.Code != "" {
 		return err
 	}
 
-	err = n.personDisabilityRepo.ClearPersonDisability(personId)
+	err = n.personDisabilityRepo.ClearPersonDisability(personId, tx)
 	if err.Code != "" {
 		return err
 	}
@@ -276,13 +266,13 @@ func (n *personService) UpdatePersonDisabilities(disabilities []model.Disability
 			Acquired:     disability.Acquired,
 		}
 
-		err = n.personDisabilityRepo.UpsertPersonDisability(disability)
+		err = n.personDisabilityRepo.UpsertPersonDisability(disability, tx)
 		if err.Code != "" {
 			return err
 		}
 	}
 
-	err = n.personRepo.UpdatePerson(person, personId)
+	err = n.personRepo.UpdatePerson(person, personId, tx)
 	if err.Code != "" {
 		return err
 	}
@@ -291,12 +281,12 @@ func (n *personService) UpdatePersonDisabilities(disabilities []model.Disability
 }
 
 func (n *personService) DeletePerson(personId int) utils.Error {
-	person, err := n.personRepo.GetPersonById(personId)
+	person, err := n.personRepo.GetPersonById(personId, nil)
 	if err.Code != "" {
 		return err
 	}
 
-	err = n.personDisabilityRepo.ClearPersonDisability(personId)
+	err = n.personDisabilityRepo.ClearPersonDisability(personId, nil)
 	if err.Code != "" {
 		return err
 	}

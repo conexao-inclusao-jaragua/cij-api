@@ -8,18 +8,25 @@ import (
 )
 
 type NewsRepo interface {
+	BaseRepoMethods
+
 	ListNews() ([]model.News, utils.Error)
 	CreateNews(news model.News) utils.Error
 }
 
 type newsRepo struct {
+	BaseRepo
 	db *gorm.DB
 }
 
 func NewNewsRepo(db *gorm.DB) NewsRepo {
-	return &newsRepo{
+	repo := &newsRepo{
 		db: db,
 	}
+
+	repo.SetRepo(repo.db)
+
+	return repo
 }
 
 func newsRepoError(message string, code string) utils.Error {
