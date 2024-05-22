@@ -8,19 +8,26 @@ import (
 )
 
 type AddressRepo interface {
+	BaseRepoMethods
+
 	GetAddressById(id int) (model.Address, utils.Error)
-	UpsertAddress(address model.Address) (int, utils.Error)
+	UpsertAddress(address model.Address, tx *gorm.DB) (int, utils.Error)
 	DeleteAddress(id int) utils.Error
 }
 
 type addressRepo struct {
+	BaseRepo
 	db *gorm.DB
 }
 
 func NewAddressRepo(db *gorm.DB) AddressRepo {
-	return &addressRepo{
+	repo := &addressRepo{
 		db: db,
 	}
+
+	repo.SetRepo(repo.db)
+
+	return repo
 }
 
 func addressRepoError(message string, code string) utils.Error {
@@ -40,8 +47,14 @@ func (n *addressRepo) GetAddressById(id int) (model.Address, utils.Error) {
 	return address, utils.Error{}
 }
 
-func (n *addressRepo) UpsertAddress(address model.Address) (int, utils.Error) {
-	if err := n.db.Save(&address).Error; err != nil {
+func (n *addressRepo) UpsertAddress(address model.Address, tx *gorm.DB) (int, utils.Error) {
+	databaseConn := n.db
+
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	if err := databaseConn.Save(&address).Error; err != nil {
 		return 0, addressRepoError("failed to upsert the address", "02")
 	}
 

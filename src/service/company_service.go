@@ -4,6 +4,9 @@ import (
 	"cij_api/src/model"
 	"cij_api/src/repo"
 	"cij_api/src/utils"
+	"fmt"
+
+	"gorm.io/gorm"
 )
 
 type CompanyService interface {
@@ -77,42 +80,38 @@ func (n *companyService) CreateCompany(createCompany model.CompanyRequest) utils
 	}
 
 	userInfo.Password = hashedPassword
-	userInfo.RoleId = 2 // 2 is the id of the role "company"
+	userInfo.RoleId = model.CompanyRole
 
-	userId, userError := n.userRepo.CreateUser(userInfo)
-	if userError.Code != "" {
-		return userError
-	}
-
-	addressInfo := createCompany.ToAddress()
-
-	addressId, addresError := n.addressRepo.UpsertAddress(addressInfo)
-	if addresError.Code != "" {
-		userError = n.userRepo.DeleteUser(userId)
+	errTx := n.userRepo.BeginTransaction(func(tx *gorm.DB) error {
+		userId, userError := n.userRepo.CreateUser(userInfo, tx)
 		if userError.Code != "" {
+			fmt.Println("Error: ", userError)
 			return userError
 		}
 
-		return addresError
-	}
+		addressInfo := createCompany.ToAddress()
 
-	companyInfo := createCompany.ToModel(userInfo)
-	companyInfo.UserId = userId
-	companyInfo.AddressId = &addressId
-
-	companyError := n.companyRepo.CreateCompany(companyInfo)
-	if companyError.Code != "" {
-		userError = n.userRepo.DeleteUser(userId)
-		if userError.Code != "" {
-			return userError
-		}
-
-		addresError = n.addressRepo.DeleteAddress(addressId)
+		addressId, addresError := n.addressRepo.UpsertAddress(addressInfo, tx)
 		if addresError.Code != "" {
+			fmt.Println("Error: ", addresError)
 			return addresError
 		}
 
-		return companyError
+		companyInfo := createCompany.ToModel(userInfo)
+		companyInfo.UserId = userId
+		companyInfo.AddressId = &addressId
+
+		companyError := n.companyRepo.CreateCompany(companyInfo, tx)
+		if companyError.Code != "" {
+			fmt.Println("Error: ", companyError)
+			return companyError
+		}
+
+		return nil
+	})
+
+	if errTx != nil {
+		return companyServiceError("failed to create the company", "02")
 	}
 
 	return utils.Error{}
@@ -162,7 +161,7 @@ func (n *companyService) UpdateCompany(updateCompany model.CompanyRequest, compa
 
 	addressInfo.Id = *company.AddressId
 
-	addressId, addresError := n.addressRepo.UpsertAddress(addressInfo)
+	addressId, addresError := n.addressRepo.UpsertAddress(addressInfo, nil)
 	if addresError.Code != "" {
 		return addresError
 	}

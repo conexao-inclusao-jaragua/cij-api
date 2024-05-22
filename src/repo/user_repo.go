@@ -8,7 +8,9 @@ import (
 )
 
 type UserRepo interface {
-	CreateUser(createUser model.User) (int, utils.Error)
+	BaseRepoMethods
+
+	CreateUser(createUser model.User, tx *gorm.DB) (int, utils.Error)
 	ListUsers() ([]model.User, utils.Error)
 	GetUserByEmail(email string) (model.User, utils.Error)
 	GetUserById(id int) (model.User, utils.Error)
@@ -17,13 +19,18 @@ type UserRepo interface {
 }
 
 type userRepo struct {
+	BaseRepo
 	db *gorm.DB
 }
 
 func NewUserRepo(db *gorm.DB) UserRepo {
-	return &userRepo{
+	repo := &userRepo{
 		db: db,
 	}
+
+	repo.SetRepo(repo.db)
+
+	return repo
 }
 
 func userRepoError(message string, code string) utils.Error {
@@ -32,8 +39,14 @@ func userRepoError(message string, code string) utils.Error {
 	return utils.NewError(message, errorCode)
 }
 
-func (n *userRepo) CreateUser(createUser model.User) (int, utils.Error) {
-	if err := n.db.Create(&createUser).Error; err != nil {
+func (n *userRepo) CreateUser(createUser model.User, tx *gorm.DB) (int, utils.Error) {
+	databaseConn := n.db
+
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	if err := databaseConn.Create(&createUser).Error; err != nil {
 		return 0, userRepoError("failed to create the user", "01")
 	}
 

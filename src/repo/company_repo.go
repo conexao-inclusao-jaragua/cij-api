@@ -8,7 +8,9 @@ import (
 )
 
 type CompanyRepo interface {
-	CreateCompany(createCompany model.Company) utils.Error
+	BaseRepoMethods
+
+	CreateCompany(createCompany model.Company, tx *gorm.DB) utils.Error
 	ListCompanies() ([]model.Company, utils.Error)
 	GetCompanyById(companyId int) (model.Company, utils.Error)
 	GetCompanyByUserId(userId int) (model.Company, utils.Error)
@@ -18,13 +20,18 @@ type CompanyRepo interface {
 }
 
 type companyRepo struct {
+	BaseRepo
 	db *gorm.DB
 }
 
 func NewCompanyRepo(db *gorm.DB) CompanyRepo {
-	return &companyRepo{
+	repo := &companyRepo{
 		db: db,
 	}
+
+	repo.SetRepo(repo.db)
+
+	return repo
 }
 
 func companyRepoError(message string, code string) utils.Error {
@@ -33,8 +40,14 @@ func companyRepoError(message string, code string) utils.Error {
 	return utils.NewError(message, errorCode)
 }
 
-func (n *companyRepo) CreateCompany(createCompany model.Company) utils.Error {
-	if err := n.db.Create(&createCompany).Error; err != nil {
+func (n *companyRepo) CreateCompany(createCompany model.Company, tx *gorm.DB) utils.Error {
+	databaseConn := n.db
+
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	if err := databaseConn.Create(&createCompany).Error; err != nil {
 		return companyRepoError("failed to create the company", "01")
 	}
 

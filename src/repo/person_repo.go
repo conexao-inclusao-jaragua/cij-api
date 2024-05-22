@@ -8,23 +8,30 @@ import (
 )
 
 type PersonRepo interface {
-	CreatePerson(createPerson model.Person) (int, utils.Error)
+	BaseRepoMethods
+
+	CreatePerson(createPerson model.Person, tx *gorm.DB) (int, utils.Error)
 	ListPeople() ([]model.Person, utils.Error)
-	GetPersonById(personId int) (model.Person, utils.Error)
+	GetPersonById(personId int, tx *gorm.DB) (model.Person, utils.Error)
 	GetPersonByUserId(userId int) (model.Person, utils.Error)
 	GetPersonByCpf(cpf string) (model.Person, utils.Error)
-	UpdatePerson(person model.Person, personId int) utils.Error
+	UpdatePerson(person model.Person, personId int, tx *gorm.DB) utils.Error
 	DeletePerson(personId int) utils.Error
 }
 
 type personRepo struct {
+	BaseRepo
 	db *gorm.DB
 }
 
 func NewPersonRepo(db *gorm.DB) PersonRepo {
-	return &personRepo{
+	repo := &personRepo{
 		db: db,
 	}
+
+	repo.SetRepo(repo.db)
+
+	return repo
 }
 
 func personRepoError(message string, code string) utils.Error {
@@ -33,8 +40,14 @@ func personRepoError(message string, code string) utils.Error {
 	return utils.NewError(message, errorCode)
 }
 
-func (n *personRepo) CreatePerson(createPerson model.Person) (int, utils.Error) {
-	if err := n.db.Create(&createPerson).Error; err != nil {
+func (n *personRepo) CreatePerson(createPerson model.Person, tx *gorm.DB) (int, utils.Error) {
+	databaseConn := n.db
+
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	if err := databaseConn.Create(&createPerson).Error; err != nil {
 		return 0, personRepoError("failed to create the person", "01")
 	}
 
@@ -52,10 +65,15 @@ func (n *personRepo) ListPeople() ([]model.Person, utils.Error) {
 	return people, utils.Error{}
 }
 
-func (n *personRepo) GetPersonById(personId int) (model.Person, utils.Error) {
+func (n *personRepo) GetPersonById(personId int, tx *gorm.DB) (model.Person, utils.Error) {
 	var person model.Person
+	databaseConn := n.db
 
-	err := n.db.Model(model.Person{}).Preload("User").Preload("Address").Where("id = ?", personId).Find(&person).Error
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	err := databaseConn.Model(model.Person{}).Preload("User").Preload("Address").Where("id = ?", personId).Find(&person).Error
 	if err != nil {
 		return person, personRepoError("failed to get the person", "03")
 	}
@@ -85,8 +103,14 @@ func (n *personRepo) GetPersonByCpf(cpf string) (model.Person, utils.Error) {
 	return person, utils.Error{}
 }
 
-func (n *personRepo) UpdatePerson(person model.Person, personId int) utils.Error {
-	if err := n.db.Model(model.Person{}).Where("id = ?", personId).Updates(person).Error; err != nil {
+func (n *personRepo) UpdatePerson(person model.Person, personId int, tx *gorm.DB) utils.Error {
+	databaseConn := n.db
+
+	if tx != nil {
+		databaseConn = tx
+	}
+
+	if err := databaseConn.Model(model.Person{}).Where("id = ?", personId).Updates(person).Error; err != nil {
 		return personRepoError("failed to update the person", "06")
 	}
 
