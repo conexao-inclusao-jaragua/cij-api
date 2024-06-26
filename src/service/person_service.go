@@ -13,7 +13,7 @@ type PersonService interface {
 	CreatePerson(createPerson model.PersonRequest) utils.Error
 	ListPeople() ([]model.PersonResponse, utils.Error)
 	GetPersonByUserId(userId int) (model.Person, utils.Error)
-	GetPersonById(personId int) (model.Person, utils.Error)
+	GetPersonById(personId int) (model.PersonResponse, utils.Error)
 	GetPersonByCpf(cpf string) (model.Person, utils.Error)
 	GetUserByEmail(email string) (model.User, utils.Error)
 	GetDisabilityById(disabilityId int) (model.Disability, utils.Error)
@@ -59,40 +59,9 @@ func (s *personService) ListPeople() ([]model.PersonResponse, utils.Error) {
 	}
 
 	for _, person := range people {
-		user, err := s.userRepo.GetUserById(person.User.Id)
-		if err.Code != "" {
-			return peopleResponse, err
-		}
+		personResponse := model.PersonResponse{}
 
-		personResponse := person.ToResponse(user)
-
-		if person.AddressId != nil {
-			address, err := s.addressRepo.GetAddressById(*person.AddressId)
-			if err.Code != "" {
-				return peopleResponse, err
-			}
-
-			if address.Id != 0 {
-				addressResponse := address.ToResponse()
-				personResponse.Address = &addressResponse
-			}
-		}
-
-		disabilities, err := s.personDisabilityRepo.GetPersonDisabilities(person.Id)
-		if err.Code != "" {
-			return peopleResponse, err
-		}
-
-		if len(disabilities) > 0 {
-			var disabilitiesResponse []model.PersonDisabilityResponse
-
-			for _, disability := range disabilities {
-				disabilityResponse := disability.ToResponse()
-				disabilitiesResponse = append(disabilitiesResponse, disabilityResponse)
-			}
-
-			personResponse.Disabilities = &disabilitiesResponse
-		}
+		s.personToResponse(&personResponse, person)
 
 		peopleResponse = append(peopleResponse, personResponse)
 	}
@@ -158,13 +127,21 @@ func (n *personService) GetPersonByUserId(userId int) (model.Person, utils.Error
 	return person, utils.Error{}
 }
 
-func (n *personService) GetPersonById(personId int) (model.Person, utils.Error) {
-	person, err := n.personRepo.GetPersonById(personId, nil)
+func (s *personService) GetPersonById(personId int) (model.PersonResponse, utils.Error) {
+	personResponse := model.PersonResponse{}
+
+	person, err := s.personRepo.GetPersonById(personId, nil)
 	if err.Code != "" {
-		return person, err
+		return personResponse, err
 	}
 
-	return person, utils.Error{}
+	if person.Id == 0 {
+		return personResponse, personServiceError("person not found", "01")
+	}
+
+	s.personToResponse(&personResponse, person)
+
+	return personResponse, utils.Error{}
 }
 
 func (n *personService) GetPersonByCpf(cpf string) (model.Person, utils.Error) {
@@ -307,4 +284,43 @@ func (n *personService) DeletePerson(personId int) utils.Error {
 	}
 
 	return utils.Error{}
+}
+
+func (n *personService) personToResponse(personResponse *model.PersonResponse, person model.Person) (model.PersonResponse, utils.Error) {
+	user, err := n.userRepo.GetUserById(person.UserId)
+	if err.Code != "" {
+		return *personResponse, err
+	}
+
+	*personResponse = person.ToResponse(user)
+
+	if person.AddressId != nil {
+		address, err := n.addressRepo.GetAddressById(*person.AddressId)
+		if err.Code != "" {
+			return *personResponse, err
+		}
+
+		if address.Id != 0 {
+			addressResponse := address.ToResponse()
+			personResponse.Address = &addressResponse
+		}
+	}
+
+	disabilities, err := n.personDisabilityRepo.GetPersonDisabilities(person.Id)
+	if err.Code != "" {
+		return *personResponse, err
+	}
+
+	if len(disabilities) > 0 {
+		var disabilitiesResponse []model.PersonDisabilityResponse
+
+		for _, disability := range disabilities {
+			disabilityResponse := disability.ToResponse()
+			disabilitiesResponse = append(disabilitiesResponse, disabilityResponse)
+		}
+
+		personResponse.Disabilities = &disabilitiesResponse
+	}
+
+	return *personResponse, utils.Error{}
 }

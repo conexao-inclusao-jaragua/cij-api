@@ -6,10 +6,12 @@ import (
 	"cij_api/src/middleware"
 	"cij_api/src/repo"
 	"cij_api/src/service"
+	"fmt"
 
 	_ "cij_api/docs"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
+	"github.com/fatih/color"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 )
@@ -47,6 +49,7 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	api := router.Group("/people")
 	{
 		api.Get("/", personController.ListPeople)
+		api.Get("/:id", personController.GetPerson)
 		api.Post("/", personController.CreatePerson)
 
 		api.Use(middleware.AuthUser)
@@ -72,7 +75,41 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 		api.Post("/", newsController.CreateNews)
 	}
 
+	basePath := getBasePath()
+	fmt.Printf("API Routes:\n")
+
+	for _, r := range router.GetRoutes() {
+		if (r.Method == "GET" || r.Method == "POST" || r.Method == "PUT" || r.Method == "DELETE") && r.Path != "/health" {
+			fullPath := basePath + r.Path
+			paintMethod(r.Method)
+			paintPath(fullPath)
+		}
+	}
+
 	return router
+}
+
+func getBasePath() string {
+	return "http://localhost:3040"
+}
+
+func paintMethod(method string) {
+	switch method {
+	case "GET":
+		color.New(color.FgMagenta).Printf("%s ", method)
+	case "POST":
+		color.New(color.FgGreen).Printf("%s ", method)
+	case "PUT":
+		color.New(color.FgYellow).Printf("%s ", method)
+	case "DELETE":
+		color.New(color.FgRed).Printf("%s ", method)
+	default:
+		color.New(color.FgWhite).Printf("%s ", method)
+	}
+}
+
+func paintPath(path string) {
+	color.White("%s\n", path)
 }
 
 // HealthCheck
