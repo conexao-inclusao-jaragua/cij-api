@@ -17,6 +17,7 @@ require (
 	github.com/cloudinary/cloudinary-go/v2 v2.7.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
 	github.com/creasty/defaults v1.5.1 // indirect
+	github.com/fatih/color v1.17.0 // indirect
 	github.com/go-openapi/analysis v0.21.4 // indirect
 	github.com/go-openapi/errors v0.20.4 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect

@@ -150,6 +150,56 @@ func (n *PersonController) ListPeople(ctx *fiber.Ctx) error {
 	return ctx.Status(http.StatusOK).JSON(response)
 }
 
+// GetPerson
+// @Summary Get a person by ID.
+// @Description get a person by their ID.
+// @Tags People
+// @Accept application/json
+// @Produce json
+// @Param id path string true "Person ID"
+// @Success 200 {object} model.PersonResponse
+// @Failure 404 {object} MessageResponse
+// @Failure 500 {object} MessageResponse
+// @Router /people/:id [get]
+func (n *PersonController) GetPerson(ctx *fiber.Ctx) error {
+	var response model.Response
+
+	personId := ctx.Params("id")
+
+	idInt, err := strconv.Atoi(personId)
+	if err != nil {
+		response = model.Response{
+			Message: err.Error(),
+		}
+
+		return ctx.Status(http.StatusBadRequest).JSON(response)
+	}
+
+	person, errPerson := n.personService.GetPersonById(idInt)
+	if errPerson.Code != "" {
+		response = model.Response{
+			Message: errPerson.Error(),
+		}
+
+		return ctx.Status(http.StatusInternalServerError).JSON(response)
+	}
+
+	if person.Id == 0 {
+		response = model.Response{
+			Message: "person not found",
+		}
+
+		return ctx.Status(http.StatusNotFound).JSON(response)
+	}
+
+	response = model.Response{
+		Message: "success",
+		Data:    person,
+	}
+
+	return ctx.Status(http.StatusOK).JSON(response)
+}
+
 // UpdatePerson
 // @Summary Update a person.
 // @Description update an existent person and their user.

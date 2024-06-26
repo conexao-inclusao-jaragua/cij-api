@@ -596,6 +596,34 @@ paths:
       summary: Delete a person.
       tags:
       - People
+    get:
+      consumes:
+      - application/json
+      description: get a person by their ID.
+      parameters:
+      - description: Person ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PersonResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.MessageResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.MessageResponse'
+      summary: Get a person by ID.
+      tags:
+      - People
     put:
       consumes:
       - application/json
