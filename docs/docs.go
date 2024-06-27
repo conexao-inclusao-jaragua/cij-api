@@ -216,6 +216,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/config/{email}": {
+            "get": {
+                "description": "Get user config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "config"
+                ],
+                "summary": "Get user config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User email",
+                        "name": "email",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Config"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/get-user-data": {
             "post": {
                 "description": "get user information by token.",
@@ -785,6 +829,21 @@ const docTemplate = `{
                 }
             }
         },
+        "enum.ColorBlindnessEnum": {
+            "type": "string",
+            "enum": [
+                "normal",
+                "protanopia",
+                "deuteranopia",
+                "tritanopia"
+            ],
+            "x-enum-varnames": [
+                "Normal",
+                "Protanopia",
+                "Deuteranopia",
+                "Tritanopia"
+            ]
+        },
         "enum.GenderEnum": {
             "type": "string",
             "enum": [
@@ -796,6 +855,19 @@ const docTemplate = `{
                 "Male",
                 "Female",
                 "Other"
+            ]
+        },
+        "enum.ThemeEnum": {
+            "type": "string",
+            "enum": [
+                "light",
+                "dark",
+                "system"
+            ],
+            "x-enum-varnames": [
+                "Light",
+                "Dark",
+                "System"
             ]
         },
         "model.AddressRequest": {
@@ -899,6 +971,29 @@ const docTemplate = `{
                 },
                 "user": {
                     "$ref": "#/definitions/model.UserResponse"
+                }
+            }
+        },
+        "model.Config": {
+            "type": "object",
+            "properties": {
+                "color_blindness": {
+                    "$ref": "#/definitions/enum.ColorBlindnessEnum"
+                },
+                "font_size": {
+                    "type": "integer"
+                },
+                "screen_reader": {
+                    "type": "boolean"
+                },
+                "system_colors": {
+                    "$ref": "#/definitions/model.SystemColors"
+                },
+                "theme": {
+                    "$ref": "#/definitions/enum.ThemeEnum"
+                },
+                "voice_capture": {
+                    "type": "boolean"
                 }
             }
         },
@@ -1075,6 +1170,46 @@ const docTemplate = `{
                 }
             }
         },
+        "model.SystemChartColors": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string"
+            }
+        },
+        "model.SystemColors": {
+            "type": "object",
+            "properties": {
+                "chart_colors": {
+                    "$ref": "#/definitions/model.SystemChartColors"
+                },
+                "primary_colors": {
+                    "$ref": "#/definitions/model.SystemPrimaryColors"
+                }
+            }
+        },
+        "model.SystemPrimaryColors": {
+            "type": "object",
+            "properties": {
+                "background_color": {
+                    "type": "string"
+                },
+                "font_color": {
+                    "type": "string"
+                },
+                "input_color": {
+                    "type": "string"
+                },
+                "primary_color": {
+                    "type": "string"
+                },
+                "secondary_color": {
+                    "type": "string"
+                },
+                "secondary_font_color": {
+                    "type": "string"
+                }
+            }
+        },
         "model.UserRequest": {
             "type": "object",
             "properties": {
@@ -1089,6 +1224,9 @@ const docTemplate = `{
         "model.UserResponse": {
             "type": "object",
             "properties": {
+                "config": {
+                    "$ref": "#/definitions/model.Config"
+                },
                 "email": {
                     "type": "string"
                 },

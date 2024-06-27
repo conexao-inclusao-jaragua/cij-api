@@ -15,6 +15,7 @@ type UserRepo interface {
 	GetUserByEmail(email string) (model.User, utils.Error)
 	GetUserById(id int) (model.User, utils.Error)
 	UpdateUser(user model.User, userId int) utils.Error
+	UpdateUserConfig(configUrl string, userEmail string) utils.Error
 	DeleteUser(id int) utils.Error
 }
 
@@ -89,6 +90,14 @@ func (n *userRepo) GetUserById(id int) (model.User, utils.Error) {
 func (n *userRepo) UpdateUser(user model.User, userId int) utils.Error {
 	if err := n.db.Model(model.User{}).Where("id = ?", userId).Updates(user).Error; err != nil {
 		return userRepoError("failed to update the user", "05")
+	}
+
+	return utils.Error{}
+}
+
+func (n *userRepo) UpdateUserConfig(configUrl string, userEmail string) utils.Error {
+	if err := n.db.Model(model.User{}).Where("email = ?", userEmail).Update("config_url", configUrl).Error; err != nil {
+		return userRepoError("failed to update the user config", "07")
 	}
 
 	return utils.Error{}
