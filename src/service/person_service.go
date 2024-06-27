@@ -87,6 +87,8 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) utils.Err
 			return userError
 		}
 
+		userInfo.Id = userId
+
 		personInfo := createPerson.ToModel(userInfo)
 		personInfo.UserId = userId
 
@@ -113,6 +115,14 @@ func (n *personService) CreatePerson(createPerson model.PersonRequest) utils.Err
 
 	if errTx != nil {
 		return personServiceError("failed to create the person", "02")
+	}
+
+	configService := NewConfigService(n.userRepo)
+
+	uploadErr := configService.UploadUserConfig(userInfo.Email, nil)
+	if uploadErr.Code != "" {
+		fmt.Print("Error: ", uploadErr)
+		return uploadErr
 	}
 
 	return utils.Error{}
@@ -321,6 +331,18 @@ func (n *personService) personToResponse(personResponse *model.PersonResponse, p
 
 		personResponse.Disabilities = &disabilitiesResponse
 	}
+
+	userConfig := model.DefaultConfig
+
+	if user.ConfigUrl != "" {
+		configService := NewConfigService(n.userRepo)
+		userConfig, err = configService.GetUserConfig(user.ConfigUrl)
+		if err.Code != "" {
+			return *personResponse, err
+		}
+	}
+
+	personResponse.User.Config = userConfig
 
 	return *personResponse, utils.Error{}
 }

@@ -10,6 +10,18 @@ definitions:
       message:
         type: string
     type: object
+  enum.ColorBlindnessEnum:
+    enum:
+    - normal
+    - protanopia
+    - deuteranopia
+    - tritanopia
+    type: string
+    x-enum-varnames:
+    - Normal
+    - Protanopia
+    - Deuteranopia
+    - Tritanopia
   enum.GenderEnum:
     enum:
     - male
@@ -20,6 +32,16 @@ definitions:
     - Male
     - Female
     - Other
+  enum.ThemeEnum:
+    enum:
+    - light
+    - dark
+    - system
+    type: string
+    x-enum-varnames:
+    - Light
+    - Dark
+    - System
   model.AddressRequest:
     properties:
       city:
@@ -87,6 +109,21 @@ definitions:
         type: string
       user:
         $ref: '#/definitions/model.UserResponse'
+    type: object
+  model.Config:
+    properties:
+      color_blindness:
+        $ref: '#/definitions/enum.ColorBlindnessEnum'
+      font_size:
+        type: integer
+      screen_reader:
+        type: boolean
+      system_colors:
+        $ref: '#/definitions/model.SystemColors'
+      theme:
+        $ref: '#/definitions/enum.ThemeEnum'
+      voice_capture:
+        type: boolean
     type: object
   model.Credentials:
     properties:
@@ -201,6 +238,32 @@ definitions:
       message:
         type: string
     type: object
+  model.SystemChartColors:
+    additionalProperties:
+      type: string
+    type: object
+  model.SystemColors:
+    properties:
+      chart_colors:
+        $ref: '#/definitions/model.SystemChartColors'
+      primary_colors:
+        $ref: '#/definitions/model.SystemPrimaryColors'
+    type: object
+  model.SystemPrimaryColors:
+    properties:
+      background_color:
+        type: string
+      font_color:
+        type: string
+      input_color:
+        type: string
+      primary_color:
+        type: string
+      secondary_color:
+        type: string
+      secondary_font_color:
+        type: string
+    type: object
   model.UserRequest:
     properties:
       email:
@@ -210,6 +273,8 @@ definitions:
     type: object
   model.UserResponse:
     properties:
+      config:
+        $ref: '#/definitions/model.Config'
       email:
         type: string
       id:
@@ -367,6 +432,35 @@ paths:
       summary: Update a company.
       tags:
       - Companies
+  /config/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Get user config
+      parameters:
+      - description: User email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Config'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/model.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: Get user config
+      tags:
+      - config
   /get-user-data:
     post:
       consumes:

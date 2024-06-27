@@ -65,4 +65,5 @@ const (
 	DisabilityErrorType ErrorEntity = 4
 	CompanyErrorType    ErrorEntity = 5
 	NewsErrorType       ErrorEntity = 6
+	ConfigErrorType     ErrorEntity = 7
 )

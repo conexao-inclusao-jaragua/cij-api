@@ -36,8 +36,11 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	newsService := service.NewNewsService(newsRepo)
 	newsController := controller.NewNewsController(newsService)
 
+	configService := service.NewConfigService(userRepo)
+	configController := controller.NewConfigController(configService)
+
 	authService := auth.NewAuthService(userRepo)
-	authController := auth.NewAuthController(*authService, personService, companyService, addressService)
+	authController := auth.NewAuthController(*authService, personService, companyService, addressService, configService)
 
 	router.Get("/health", HealthCheck)
 
@@ -73,6 +76,11 @@ func NewRouter(router *fiber.App, db *gorm.DB) *fiber.App {
 	{
 		api.Get("/", newsController.ListNews)
 		api.Post("/", newsController.CreateNews)
+	}
+
+	api = router.Group("/config")
+	{
+		api.Put("/:email", configController.UpdateUserConfig)
 	}
 
 	basePath := getBasePath()

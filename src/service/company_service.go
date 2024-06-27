@@ -65,6 +65,16 @@ func (s *companyService) ListCompanies() ([]model.CompanyResponse, utils.Error) 
 			companyResponse.Address = addressResponse
 		}
 
+		userConfig := model.DefaultConfig
+		if user.ConfigUrl != "" {
+			configService := NewConfigService(s.userRepo)
+			userConfig, err = configService.GetUserConfig(user.ConfigUrl)
+			if err.Code != "" {
+				return companiesResponse, err
+			}
+		}
+
+		companyResponse.User.Config = userConfig
 		companiesResponse = append(companiesResponse, companyResponse)
 	}
 
